@@ -10,4 +10,5 @@ setup(
     author_email = 'Kengwei.Li@advantech.com.tw',
     keywords = ['advantech','susiiot','platform'],
     classifiers = [],
+    include_package_data=True,
 )

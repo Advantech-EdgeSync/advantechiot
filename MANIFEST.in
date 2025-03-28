@@ -1,0 +1,2 @@
+include advantechiot\Driver_arm\*.so
+include advantechiot\Driver_x86\*.so
