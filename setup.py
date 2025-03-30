@@ -7,21 +7,25 @@ class CustomInstall(install):
     def run(self):
         # 先執行標準安裝
         install.run(self)
+        print("\n⚠️  安裝完成！請手動執行以下指令來完成設定：")
+        print("\n    sudo cp /path/to/mylib.so /usr/lib/\n")
+        print("    或者您可以執行以下指令手動完成設定：")
+        print("\n    sudo python3 -m mypackage.post_install\n")
 
         # 確保 script 存在
-        script_dir = os.path.join(os.path.dirname(__file__), "scripts")
+        # script_dir = os.path.join(os.path.dirname(__file__), "scripts")
 
-        # 執行 install.sh（安裝 .so）
-        install_script = os.path.join(script_dir, "install.sh")
-        if os.path.exists(install_script):
-            print("執行 install.sh 安裝 .so 檔案...")
-            subprocess.call(["sh", install_script])
+        # # 執行 install.sh（安裝 .so）
+        # install_script = os.path.join(script_dir, "install.sh")
+        # if os.path.exists(install_script):
+        #     print("執行 install.sh 安裝 .so 檔案...")
+        #     subprocess.call(["sh", install_script])
 
-        # 執行 build_python.sh（編譯 Python）
-        build_script = os.path.join(script_dir, "build_python.sh")
-        if os.path.exists(build_script):
-            print("執行 build_python.sh 編譯 Python 程式...")
-            subprocess.call(["sh", build_script])
+        # # 執行 build_python.sh（編譯 Python）
+        # build_script = os.path.join(script_dir, "build_python.sh")
+        # if os.path.exists(build_script):
+        #     print("執行 build_python.sh 編譯 Python 程式...")
+        #     subprocess.call(["sh", build_script])
 
 setup(
     name="mypackage",
