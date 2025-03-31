@@ -3,16 +3,12 @@ import json
 import sys
 import os
 import platform
-import imotherboad
-import igpio
+from .imotherboard import IMotherboard
+from .igpio import IGpio,GpioDirectionType,GpioLevelType
 from typing import List
-import importlib
-import time
-import subprocess
 
 
-class SusiIot(imotherboad.IMotherboard,
-              igpio.IGpio):
+class SusiIot(IMotherboard,IGpio):
     def __init__(self):
         self.susi_iot_library = None
         self.json_library = None
@@ -28,7 +24,6 @@ class SusiIot(imotherboad.IMotherboard,
         self.initialize_library()
         self.susi_iot_library.SusiIoTInitialize()
         self.get_susi_information_string()
-        # self.get_susi_information()
         self.get_gpio_list()
         self.get_sdram_list()
         self.get_name_id_list()
@@ -885,7 +880,7 @@ class SusiIot(imotherboad.IMotherboard,
         except:
             return None
 
-    def set_direction(self, pin: str, direction: igpio.GpioDirectionType) -> None:
+    def set_direction(self, pin: str, direction: GpioDirectionType) -> None:
         try:
             id_number = self.susi_information["GPIO"][pin]["e"][0]["id"]
             result = self.set_value(id_number, direction)
@@ -902,7 +897,7 @@ class SusiIot(imotherboad.IMotherboard,
         except:
             return None
 
-    def set_level(self, pin: str, level: igpio.GpioLevelType) -> None:
+    def set_level(self, pin: str, level: GpioLevelType) -> None:
         gpio_direction_is_output = self.is_gpio_output_with_gpio_name(pin)
         if not gpio_direction_is_output:
             return False

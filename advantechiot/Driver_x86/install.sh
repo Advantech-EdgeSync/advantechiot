@@ -13,7 +13,7 @@ LINUX_LIB_DIR="/usr/lib"
 LINUX_ADV_DIR="/usr/lib/Advantech"
 LINUX_SUSI_INI_DIR=${LINUX_ADV_DIR}"/Susi/ini"
 LINUX_SUSIIOT_MODULE_DIR=${LINUX_ADV_DIR}"/iot/modules"
-
+CPU_NAME=$(cat /proc/cpuinfo | grep "model name" | uniq)
 usage()
 {
 	cat >&2 <<-eof
@@ -54,7 +54,9 @@ installlibrary()
 	cp -af ${THIS}/modules/libSUSIDrv.so ${LINUX_SUSIIOT_MODULE_DIR}/
 	cp -af ${THIS}/modules/libDiskInfo.so ${LINUX_SUSIIOT_MODULE_DIR}/
 	cp -af ${THIS}/modules/libSUSIDevice.so ${LINUX_SUSIIOT_MODULE_DIR}/
-	cp -af ${THIS}/modules/libSUSIAIIoT.so ${LINUX_SUSIIOT_MODULE_DIR}/
+	if echo "${CPU_NAME}" | grep -q "Intel";then
+		cp -af ${THIS}/modules/libSUSIAIIoT.so ${LINUX_SUSIIOT_MODULE_DIR}/
+	fi
 	ldconfig
 }
 
@@ -77,18 +79,11 @@ case ${1} in
 	"")
 		uninstalllibrary
 		remove_ai_service
-		echo "*****************************************************************"
-		echo "*                SOFTWARE SUSI LICENSE AGREEMENT                *"
-		echo "* Please carefully read the terms and conditions in license.rtf.*"
-		echo "* Do you agree with above patent declaration?                   *" 
-		echo "*****************************************************************"
-		echo "  [Y] Yes, I agree.  [N] No, I don't agree."
-		read ans
-		if [ ${ans} != "Y" -a ${ans} != "y" ];then
-			exit 1
+		
+		if echo "${CPU_NAME}" | grep -q "Intel";then
+			echo "Install SUSI AI service."
+			install_ai_service
 		fi
-		echo "Install SUSI AI service."
-		install_ai_service
 		echo "Install SUSI library."
 		installlibrary
 		ldconfig -p | grep "${LIB4_NAME}\|${LIB3_NAME}\|${LIBE_NAME}\|${JNI4_NAME}\|${DEVICE_NAME}\|${JANSSON_NAME}\|${IOT_NAME}\|${AI_NAME}"
@@ -96,8 +91,10 @@ case ${1} in
 	"s")
 		uninstalllibrary
 		remove_ai_service
-		echo "Install SUSI AI service."
-		install_ai_service
+		if echo "${CPU_NAME}" | grep -q "Intel";then
+			echo "Install SUSI AI service."
+			install_ai_service
+		fi
 		echo "Install SUSI library."
 		installlibrary
 		ldconfig -p | grep "${LIB4_NAME}\|${LIB3_NAME}\|${LIBE_NAME}\|${JNI4_NAME}\|${DEVICE_NAME}\|${JANSSON_NAME}\|${IOT_NAME}\|${AI_NAME}"

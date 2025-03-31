@@ -8,7 +8,7 @@ func_un_install_serviceA_all(){
  
  service_name=susi_api_server.service
     
- STATUS="$(systemctl is-active $service_name)"
+#  STATUS="$(systemctl is-active $service_name)"
  
  if [ "${STATUS}" = "inactive" ] && [ -f "/etc/systemd/system/$service_name" ]; then
     

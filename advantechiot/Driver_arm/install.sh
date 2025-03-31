@@ -53,16 +53,6 @@ uninstalllibrary()
 case ${1} in
 	"")
 		uninstalllibrary
-		echo "*****************************************************************"
-		echo "*                SOFTWARE SUSI LICENSE AGREEMENT                *"
-		echo "* Please carefully read the terms and conditions in license.rtf.*"
-		echo "* Do you agree with above patent declaration?                   *" 
-		echo "*****************************************************************"
-		echo "  [Y] Yes, I agree.  [N] No, I don't agree."
-		read ans
-		if [ ${ans} != "Y" -a ${ans} != "y" ];then
-			exit 1
-		fi
 		echo "Install SUSI library."
 		installlibrary
 		ldconfig -p | grep "${LIB4_NAME}\|${LIB3_NAME}\|${LIBE_NAME}\|${JNI4_NAME}\|${DEVICE_NAME}\|${JANSSON_NAME}\|${IOT_NAME}"

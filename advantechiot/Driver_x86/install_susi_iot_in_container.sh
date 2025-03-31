@@ -40,7 +40,7 @@ install_ai_service()
 
 remove_ai_service()
 {
-	target_ai_remove_file=${THIS}/AI/service/unInstall_SusiService_in_container.sh
+	target_ai_remove_file=${THIS}/AI/service/uninstall_SusiService_in_container.sh
 	"$target_ai_remove_file"
 }
 
@@ -79,16 +79,6 @@ case ${1} in
 	"")
 		uninstalllibrary
 		remove_ai_service
-		echo "*****************************************************************"
-		echo "*                SOFTWARE SUSI LICENSE AGREEMENT                *"
-		echo "* Please carefully read the terms and conditions in license.rtf.*"
-		echo "* Do you agree with above patent declaration?                   *" 
-		echo "*****************************************************************"
-		echo "  [Y] Yes, I agree.  [N] No, I don't agree."
-		read ans
-		if [ ${ans} != "Y" -a ${ans} != "y" ];then
-			exit 1
-		fi
 		if echo "${CPU_NAME}" | grep -q "Intel";then
 			echo "Install SUSI AI service."
 			install_ai_service
