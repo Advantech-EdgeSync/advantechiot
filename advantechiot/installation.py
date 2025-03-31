@@ -119,5 +119,3 @@ def install():
         print("install advanteck iot SDK successfully")
     else:
         sys.exit(f"fail to install advanteck iot SDK：{exit_code}")
-
-install()
