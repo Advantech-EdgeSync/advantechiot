@@ -40,7 +40,7 @@ class CustomInstall(install):
 
 setup(
     name="advantechiot",
-    version="0.1.20",
+    version="0.1.22",
     packages=["advantechiot"],
     package_data={
         "advantechiot": [
