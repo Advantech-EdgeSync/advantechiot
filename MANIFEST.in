@@ -1,2 +1,6 @@
 recursive-include advantechiot/Driver_x86 *.so
 recursive-include advantechiot/Driver_arm *.so
+recursive-include advantechiot/Driver_x86 *.sh
+recursive-include advantechiot/Driver_arm *.sh
+recursive-include advantechiot/Driver_x86 *.ini
+recursive-include advantechiot/Driver_arm *.ini

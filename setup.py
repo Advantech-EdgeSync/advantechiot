@@ -16,36 +16,40 @@ class CustomInstall(install):
         print("\n    sudo python3 -m mypackage.post_install\n")
 
         # 額外的檔案處理邏輯（如果有需要）
-        source_dir_arm = os.path.join(os.path.dirname(__file__), 'Driver_arm')
-        source_dir_x86 = os.path.join(os.path.dirname(__file__), 'Driver_x86')
+        # source_dir_arm = os.path.join(os.path.dirname(__file__), 'Driver_arm')
+        # source_dir_x86 = os.path.join(os.path.dirname(__file__), 'Driver_x86')
         # `advantechiot` 會在安裝目錄下
-        target_dir = os.path.join(self.install_lib, 'advantechiot')
+        # target_dir = os.path.join(self.install_lib, 'advantechiot')
 
         # 複製 Driver_arm 資料夾
-        if os.path.exists(source_dir_arm):
-            shutil.copytree(source_dir_arm, os.path.join(
-                target_dir, 'Driver_arm'))
-            print(f'已將 Driver_arm 複製到 {os.path.join(target_dir, "Driver_arm")}')
-        else:
-            print('找不到 Driver_arm 資料夾')
+        # if os.path.exists(source_dir_arm):
+        #     shutil.copytree(source_dir_arm, os.path.join(
+        #         target_dir, 'Driver_arm'))
+        #     print(f'已將 Driver_arm 複製到 {os.path.join(target_dir, "Driver_arm")}')
+        # else:
+        #     print('找不到 Driver_arm 資料夾')
 
         # 複製 Driver_x86 資料夾
-        if os.path.exists(source_dir_x86):
-            shutil.copytree(source_dir_x86, os.path.join(
-                target_dir, 'Driver_x86'))
-            print(f'已將 Driver_x86 複製到 {os.path.join(target_dir, "Driver_x86")}')
-        else:
-            print('找不到 Driver_x86 資料夾')
+        # if os.path.exists(source_dir_x86):
+        #     shutil.copytree(source_dir_x86, os.path.join(
+        #         target_dir, 'Driver_x86'))
+        #     print(f'已將 Driver_x86 複製到 {os.path.join(target_dir, "Driver_x86")}')
+        # else:
+        #     print('找不到 Driver_x86 資料夾')
 
 
 setup(
     name="advantechiot",
-    version="0.1.16",
+    version="0.1.20",
     packages=["advantechiot"],
     package_data={
         "advantechiot": [
-            "Driver_x86/*.so",  # 確保 Driver_x86 目錄中的 .so 檔案會被打包
-            "Driver_arm/*.so",   # 確保 Driver_arm 目錄中的 .so 檔案會被打包
+            "Driver_x86/*.sh",
+            "Driver_arm/*.sh",
+            "Driver_x86/*.so",
+            "Driver_arm/*.so",
+            "Driver_x86/*.ini",
+            "Driver_arm/*.ini"
         ],
     },
     include_package_data=True,  # 確保其他非程式碼檔案被包含
