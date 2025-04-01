@@ -3,23 +3,62 @@ from typing import List
 
 
 class IMemory(ABC):
-    @abstractmethod
-    def get_direction(self, pin: str) -> None:
-        pass
-
-    @abstractmethod
-    def set_direction(self, pin: str, direction: GpioDirectionType) -> None:
-        pass
-
-    @abstractmethod
-    def get_level(self, pin: str) -> None:
-        pass
-
-    @abstractmethod
-    def set_level(self, pin: str, level: GpioLevelType) -> None:
-        pass
-
     @property
+    def memory_count(self) -> int:
+        pass
+
     @abstractmethod
-    def memory_count(self) -> List[str]:
+    def get_memory_type(self, memory_number: int) -> str:
+        pass
+
+    @abstractmethod
+    def get_module_type(self, memory_number: int) -> str:
+        pass
+
+    @abstractmethod
+    def get_memory_size_in_GB(self, memory_number: int) -> str:
+        pass
+
+    @abstractmethod
+    def get_memory_speed(self, memory_number: int) -> str:
+        pass
+
+    @abstractmethod
+    def get_memory_rank(self, memory_number: int) -> str:
+        pass
+
+    @abstractmethod
+    def get_memory_voltage(self, memory_number: int) -> str:
+        pass
+
+    @abstractmethod
+    def get_memory_bank(self, memory_number: int) -> str:
+        pass
+
+    @abstractmethod
+    def get_memory_week_year(self, memory_number: int) -> str:
+        pass
+
+    @abstractmethod
+    def get_memory_temperature(self, memory_number: int) -> str:
+        pass
+
+    @abstractmethod
+    def get_memory_write_protection(self, memory_number: int) -> str:
+        pass
+
+    @abstractmethod
+    def get_memory_module_manufacture(self, memory_number: int) -> str:
+        pass
+
+    @abstractmethod
+    def get_memory_manufacture(self, memory_number: int) -> str:
+        pass
+
+    @abstractmethod
+    def get_memory_part_number(self, memory_number: int) -> str:
+        pass
+
+    @abstractmethod
+    def get_memory_specific(self, memory_number: int) -> str:
         pass

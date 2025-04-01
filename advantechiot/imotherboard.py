@@ -8,19 +8,16 @@ class IMotherboard(ABC):
     def name(self) -> str:
         pass
 
-
     @property
     @abstractmethod
     def bios_revision(self) -> str:
         pass
-
 
     @property
     @abstractmethod
     def voltage_sources(self) -> List[str]:
         pass
 
-    
     @abstractmethod
     def get_voltage(self, voltage_source) -> float:
         pass

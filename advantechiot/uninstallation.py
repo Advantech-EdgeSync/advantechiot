@@ -34,10 +34,9 @@ def uninstall():
             f"disable to import library, architechture:{architecture.lower()}, os:{os_name}")
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    susi_iot_install_path= os.path.join(current_dir, susi_iot_install_path)
+    susi_iot_install_path = os.path.join(current_dir, susi_iot_install_path)
     exit_code = os.system(f"{susi_iot_install_path} u")
     if exit_code == 0:
         print("uninstall advanteck iot SDK successfully")
     else:
         sys.exit(f"fail to install advanteck iot SDK：{exit_code}")
-    

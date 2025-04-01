@@ -1,6 +1,4 @@
 
-import os
-import importlib.util
 from .susiiot import SusiIot
 
 
@@ -8,15 +6,13 @@ class Device:
     def __init__(self):
         self.motherboard = None
         self.gpio = None
-        self.watch_dog = None
         self.memory = None
         self.disk_information = None
-        
+
         susiiot_object = SusiIot()
 
         self.motherboard = susiiot_object
         self.gpio = susiiot_object
-        self.watch_dog = susiiot_object
         self.memory = susiiot_object
         self.disk_information = susiiot_object
 

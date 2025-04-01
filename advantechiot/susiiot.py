@@ -4,11 +4,12 @@ import sys
 import os
 import platform
 from .imotherboard import IMotherboard
-from .igpio import IGpio,GpioDirectionType,GpioLevelType
+from .igpio import IGpio, GpioDirectionType, GpioLevelType
+from .imemory import IMemory
 from typing import List
 
 
-class SusiIot(IMotherboard,IGpio):
+class SusiIot(IMotherboard, IGpio, IMemory):
     def __init__(self):
         self.susi_iot_library = None
         self.json_library = None
@@ -537,7 +538,7 @@ class SusiIot(IMotherboard,IGpio):
         except:
             return None
 
-    def get_module_size_in_GB(self, memory_number=0):
+    def get_memory_size_in_GB(self, memory_number=0):
         try:
             memory_name = self.memory_list[memory_number]
             id_number = self.susi_id_name_table[memory_name+" "+"Module Size"]
@@ -638,7 +639,7 @@ class SusiIot(IMotherboard,IGpio):
         except:
             return None
 
-    def get_memory_dram_manufacture(self, memory_number=0):
+    def get_memory_manufacture(self, memory_number=0):
         try:
             memory_name = self.memory_list[memory_number]
             id_number = self.susi_id_name_table[memory_name +
