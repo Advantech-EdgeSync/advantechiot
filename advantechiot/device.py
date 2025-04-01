@@ -7,14 +7,14 @@ class Device:
         self.motherboard = None
         self.gpio = None
         self.memory = None
-        self.disk_information = None
+        self.disk = None
 
         susiiot_object = SusiIot()
 
         self.motherboard = susiiot_object
         self.gpio = susiiot_object
         self.memory = susiiot_object
-        self.disk_information = susiiot_object
+        self.disk = susiiot_object
 
     def is_support_susiiot(device_number):
         susiiot_support_list = [

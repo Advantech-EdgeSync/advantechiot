@@ -6,6 +6,7 @@ import platform
 from .imotherboard import IMotherboard
 from .igpio import IGpio, GpioDirectionType, GpioLevelType
 from .imemory import IMemory
+from .idisk import IDisk
 from typing import List
 
 

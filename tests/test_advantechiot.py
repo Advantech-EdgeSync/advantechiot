@@ -141,6 +141,30 @@ class TestMemory(unittest.TestCase):
         for i in range(handler.memory.memory_count):
             print(f"memory{i} specific:{handler.memory.get_memory_specific(i)}")
 
+class TestDisk(unittest.TestCase):
+    def test_disk_total_disk_space(self):
+        handler = advantechiot.device.Device()
+        print(f"memory count: {handler.disk.disk_total_disk_space}")
+
+    def test_disk_free_disk_space(self):
+        handler = advantechiot.device.Device()
+        print(f"Free Disk Space: {handler.disk.disk_free_disk_space}")
+
+    def test_disk_media_recovery_total_disk_space(self):
+        handler = advantechiot.device.Device()
+        print(f"Media Recovery Total Disk Space: {handler.disk.disk_media_recovery_total_disk_space}")
+
+    def test_disk_media_recovery_free_disk_space(self):
+        handler = advantechiot.device.Device()
+        print(f"Media Recovery Free Disk Space: {handler.disk.disk_media_recovery_free_disk_space}")
+
+    def test_disk_home_total_disk_space(self):
+        handler = advantechiot.device.Device()
+        print(f"Home Total Disk Space: {handler.disk.disk_home_total_disk_space}")
+
+    def test_disk_home_free_disk_space(self):
+        handler = advantechiot.device.Device()
+        print(f"Home Free Disk Space: {handler.disk.disk_home_free_disk_space}")
 
 if __name__ == '__main__':
     unittest.main()
