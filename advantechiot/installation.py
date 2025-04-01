@@ -52,9 +52,9 @@ def set_x86_dynamic_links():
         "libjansson.so": "libjansson.so.4.11.0",
         "libjansson.so.4": "libjansson.so.4.11.0",
     }
-
-    target_folder = "./Driver_x86/"
-
+    print("1111111111")
+    target_folder = os.path.dirname(__file__)+"/Driver_x86/"
+    print("KKKKKKKKKKKK",target_folder)
     for source, target in dynamic_links.items():
         source_path = os.path.join(target_folder, source)
         target_path = target
@@ -64,6 +64,7 @@ def set_x86_dynamic_links():
 
         try:
             os.symlink(target_path, source_path)
+            print(f"JJJJJJ from {target_path} to {source_path}")
             print(f"Created symlink: {source_path} -> {target_path}")
         except Exception as e:
             pass
@@ -114,7 +115,6 @@ def install():
     else:
         sys.exit(
             f"disable to import library, architechture:{architecture.lower()}, os:{os_name}")
-    print("111111")
     print(susi_iot_install_path)
     exit_code = os.system(susi_iot_install_path)
     if exit_code == 0:
