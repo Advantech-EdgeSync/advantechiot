@@ -32,9 +32,6 @@ install_ai_service()
 	else
 		argument=${THIS}/AI/service
 	fi
-	echo $PWD
-	echo $argument
-	echo $THIS
 	target_ai_install_file=${THIS}/AI/service/install_SusiService_in_container.sh
 	"$target_ai_install_file" "$argument"
 }
