@@ -6,7 +6,7 @@ setup(
     name="advantechiot",
     version="0.1.55",
     author='Keng Wei Li',
-    author_email = 'Kengwei.Li@advantech.com.tw',
+    author_email='Kengwei.Li@advantech.com.tw',
     packages=["advantechiot"],
     package_data={
         "advantechiot": [

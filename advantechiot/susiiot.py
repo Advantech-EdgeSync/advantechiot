@@ -824,14 +824,6 @@ class SusiIot(IMotherboard,IGpio):
             return None
 
     @property
-    def cpu_model(self) -> str:
-        return "todo"
-
-    @property
-    def os_revision(self) -> str:
-        return "todo"
-
-    @property
     def bios_revision(self) -> str:
         try:
             for item in self.susi_information["Platform Information"]["e"]:
@@ -840,10 +832,6 @@ class SusiIot(IMotherboard,IGpio):
             return None
         except:
             return None
-
-    @property
-    def ec_revision(self) -> str:
-        return "todo"
 
     @property
     def voltage_sources(self) -> List[str]:

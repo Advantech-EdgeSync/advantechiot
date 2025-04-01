@@ -11,21 +11,6 @@ class Device:
         self.watch_dog = None
         self.memory = None
         self.disk_information = None
-
-        # if os.path.exists("/etc/board"):
-        #     device_number = None
-        #     device_number = os.system("cat /etc/board")
-        #     print(f"device number: {device_number}")
-        # else:
-        #     print("/etc/board doesn't exist.")
-
-        # current_dir = os.path.dirname(os.path.abspath(__file__))
-        # pyc_path=os.path.join(current_dir, "susiiot.pyc")
-        # print(f"pyc_path: {pyc_path}")
-        # spec = importlib.util.spec_from_file_location("susiiot", pyc_path)
-        # SUSIIOT = importlib.util.module_from_spec(spec)
-        # spec.loader.exec_module(SUSIIOT)
-        # susiiot_object = SUSIIOT.SusiIot()
         
         susiiot_object = SusiIot()
 
