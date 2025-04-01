@@ -45,10 +45,14 @@ remove_ai_service()
 installlibrary()
 {
 	mkdir -p ${LINUX_SUSI_INI_DIR}/
+
+	echo ${LINUX_SUSI_INI_DIR}
+	echo ${THIS}
 	cp -af ${THIS}/ini/*.ini ${LINUX_SUSI_INI_DIR}/
 	cp -a ${THIS}/lib*.* ${LINUX_LIB_DIR}/
 
 	mkdir -p ${LINUX_SUSIIOT_MODULE_DIR}
+	echo $LINUX_SUSIIOT_MODULE_DIR
 	cp -af ${THIS}/modules/libSUSIDrv.so ${LINUX_SUSIIOT_MODULE_DIR}/
 	cp -af ${THIS}/modules/libDiskInfo.so ${LINUX_SUSIIOT_MODULE_DIR}/
 	cp -af ${THIS}/modules/libSUSIDevice.so ${LINUX_SUSIIOT_MODULE_DIR}/
