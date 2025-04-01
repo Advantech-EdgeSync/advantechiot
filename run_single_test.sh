@@ -82,3 +82,5 @@ cd root  && \
     git clone https://github.com/likevintw/vincent77.git && \
     cd vincent77 && \
     python3 -m unittest -v test_susiiot.TestCases > "$(date +\%Y\%m\%d\%H\%M\%S)_result.txt"
+
+advantechiot-install

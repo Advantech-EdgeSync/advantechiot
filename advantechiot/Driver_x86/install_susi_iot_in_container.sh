@@ -40,7 +40,7 @@ install_ai_service()
 
 remove_ai_service()
 {
-	target_ai_remove_file=${THIS}/AI/service/uninstall_SusiService_in_container.sh
+	target_ai_remove_file=${THIS}/AI/service/unInstall_SusiService_in_container.sh
 	"$target_ai_remove_file"
 }
 

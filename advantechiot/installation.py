@@ -88,20 +88,21 @@ def set_arm_dynamic_links():
 def install():
     architecture = platform.machine()
     os_name = platform.system()
+    current_path=os.path.dirname(__file__)+"/"
     susi_iot_install_path = ""
     if os_name == "Linux" and 'aarch64' in architecture.lower():
         set_arm_dynamic_links()
-        susi_iot_install_path = "Driver_arm/install.sh"
+        susi_iot_install_path = current_path+"Driver_arm/install.sh"
         # compile_python_execute_file_in_container()
 
     elif os_name == "Linux" and 'x86' in architecture.lower() and not is_in_container():
         set_x86_dynamic_links()
-        susi_iot_install_path = "Driver_x86/install.sh"
+        susi_iot_install_path = current_path+"Driver_x86/install.sh"
         # compile_python_execute_file()
 
     elif os_name == "Linux" and 'x86' in architecture.lower() and is_in_container():
         set_x86_dynamic_links()
-        susi_iot_install_path = "Driver_x86/install_susi_iot_in_container.sh"
+        susi_iot_install_path = current_path+"Driver_x86/install_susi_iot_in_container.sh"
         # compile_python_execute_file_in_container()
 
     elif os_name == "Windows" and 'x86' in architecture.lower():
@@ -113,7 +114,8 @@ def install():
     else:
         sys.exit(
             f"disable to import library, architechture:{architecture.lower()}, os:{os_name}")
-
+    print("111111")
+    print(susi_iot_install_path)
     exit_code = os.system(susi_iot_install_path)
     if exit_code == 0:
         print("install advanteck iot SDK successfully")
