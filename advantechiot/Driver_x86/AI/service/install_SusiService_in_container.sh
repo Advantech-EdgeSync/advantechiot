@@ -14,8 +14,11 @@ mkdir -p /etc/Advantech/susi/service/
 
 # run service dir (at first)
 mkdir -p /opt/Advantech/susi/service
-cp "$currentDir/Susi_X86_64_Service" "$currentDir/exeSusiService.sh" "/opt/Advantech/susi/service"
 
+echo $currentDir
+echo "GGGGGGGGGGG"
+cp "$currentDir/Susi_X86_64_Service" "$currentDir/exeSusiService.sh" "/opt/Advantech/susi/service"
+echo "HHHHHHHHH"
 
 cp "$currentDir/susi_api_server.service" "/etc/systemd/system/"
 # systemctl daemon-reload

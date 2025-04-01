@@ -33,10 +33,13 @@ install_ai_service()
 	else
 		argument=${PWD}/${THIS}/AI/service
 	fi
+	echo $PWD
 	echo $argument
+	echo $THIS
 	echo "2222222222222"
 	target_ai_install_file=${THIS}/AI/service/install_SusiService_in_container.sh
 	"$target_ai_install_file" "$argument"
+	echo "3333333"
 }
 
 remove_ai_service()
