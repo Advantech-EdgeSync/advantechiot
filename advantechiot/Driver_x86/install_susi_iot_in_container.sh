@@ -27,13 +27,14 @@ usage()
 install_ai_service()
 {
 	argument="FFF"
-
+	echo "111111111111"
 	if [ "${THIS}" = "." ]; then
 		argument=${PWD}/AI/service
 	else
 		argument=${PWD}/${THIS}/AI/service
 	fi
-
+	echo $argument
+	echo "2222222222222"
 	target_ai_install_file=${THIS}/AI/service/install_SusiService_in_container.sh
 	"$target_ai_install_file" "$argument"
 }
@@ -84,7 +85,9 @@ case ${1} in
 			install_ai_service
 		fi
 		echo "Install SUSI library."
+		echo "AAAAAAAAA"
 		installlibrary
+		echo "BBBBBBBB"
 		ldconfig -p | grep "${LIB4_NAME}\|${LIB3_NAME}\|${LIBE_NAME}\|${JNI4_NAME}\|${DEVICE_NAME}\|${JANSSON_NAME}\|${IOT_NAME}\|${AI_NAME}"
 		;;
 	"s")
