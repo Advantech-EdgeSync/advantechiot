@@ -31,7 +31,7 @@ install_ai_service()
 	if [ "${THIS}" = "." ]; then
 		argument=${PWD}/AI/service
 	else
-		argument=${PWD}/${THIS}/AI/service
+		argument=${THIS}/AI/service
 	fi
 	echo $PWD
 	echo $argument

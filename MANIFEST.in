@@ -4,3 +4,5 @@ recursive-include advantechiot/Driver_x86 *.sh
 recursive-include advantechiot/Driver_arm *.sh
 recursive-include advantechiot/Driver_x86 *.ini
 recursive-include advantechiot/Driver_arm *.ini
+recursive-include advantechiot/Driver_x86/AI/service/susi_api_server.service
+recursive-include advantechiot/Driver_x86/AI/service/Susi_X86_64_Service
