@@ -15,7 +15,7 @@ setup(
         ],
     },
     include_package_data=True,
-    install_requires=[],
+    install_requires=["setuptools"],
     entry_points={
         "console_scripts": [
             "advantechiot-install=advantechiot.installation:install",
