@@ -10,16 +10,17 @@ from .idisk import IDisk
 from typing import List
 
 
-class SusiIot(IMotherboard, IGpio, IMemory):
+class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
     def __init__(self):
         self.susi_iot_library = None
         self.json_library = None
         self.susi_information = None
-        self.susi_id_name_table = {}
         self.gpio_list = []
         self.memory_list = []
         self.voltage_source_list = []
         self.temperature_source_list = []
+        self.susi_id_name_table = {}
+        self.susi_name_id_table = {}
 
         self.check_root_authorization()
         self.import_library()
@@ -39,6 +40,46 @@ class SusiIot(IMotherboard, IGpio, IMemory):
             sys.exit("Error: Please run this program as root (use sudo).")
         else:
             return True
+    def set_id_and_name_table(self):
+        self.susi_name_id_table.update({"Platform Information": 65536})
+        self.susi_name_id_table.update({"Board manufacturer": 16843777})
+        self.susi_name_id_table.update({"Board name": 16843778})
+        self.susi_name_id_table.update({"BIOS revision": 16843781})
+        self.susi_name_id_table.update({"Driver version": 16843265})
+        self.susi_name_id_table.update({"Library version": 16843266})
+        self.susi_name_id_table.update({"Hardware Monitor": 131072})
+        self.susi_name_id_table.update({"Voltage Vcore": 16908801})
+        self.susi_name_id_table.update({"Voltage 3.3V": 16908804})
+        self.susi_name_id_table.update({"Voltage 5V": 16908805})
+        self.susi_name_id_table.update({"Voltage 12V": 16908806})
+        self.susi_name_id_table.update({"Voltage 5V Standby": 16908807})
+        self.susi_name_id_table.update({"Voltage CMOS Battery": 16908809})
+        self.susi_name_id_table.update({"Voltage VCC3V": 16908817})
+        self.susi_name_id_table.update({"Temperature CPU": 16908545})
+        self.susi_name_id_table.update({"Temperature System": 16908547})
+        self.susi_name_id_table.update({"Fan Speed CPUFAN1": 16909057})
+        self.susi_name_id_table.update({"Fan Speed SYSFAN1": 16909058})
+        self.susi_name_id_table.update({"Fan Speed SYSFAN2": 16909060})
+        self.susi_name_id_table.update({"GPIO": 262144})
+        self.susi_name_id_table.update({"SDRAM": 337117184})
+        self.susi_name_id_table.update({"DiskInfo": 353697792})
+        self.susi_name_id_table.update({"Disk -volume Total Disk Space": 353697792})
+        self.susi_name_id_table.update({"Disk -volume Free Disk Space": 353697793})
+        self.susi_name_id_table.update({"Disk -etc-board Total Disk Space": 353698048})
+        self.susi_name_id_table.update({"Disk -etc-board Free Disk Space": 353698049})
+        self.susi_name_id_table.update({"Disk -etc-resolv.conf Total Disk Space": 353698304})
+        self.susi_name_id_table.update({"Disk -etc-resolv.conf Free Disk Space": 353698305})
+        self.susi_name_id_table.update({"Disk -etc-hostname Total Disk Space": 353698560})
+        self.susi_name_id_table.update({"Disk -etc-hostname Free Disk Space": 353698561})
+        self.susi_name_id_table.update({"Disk -etc-hosts Total Disk Space": 353698816})
+        self.susi_name_id_table.update({"Disk -etc-hosts Free Disk Space": 353698817})
+        self.susi_name_id_table.update({"SUSIIoT Information": 256})
+        self.susi_name_id_table.update({"SUSIIoT version": 257})
+        self.susi_name_id_table.update({"Backlight": 327680})
+        self.susi_name_id_table.update({"Backlight Brightness": 17106177})
+        self.susi_name_id_table.update({"Backlight Frequency": 17105409})
+        self.susi_name_id_table.update({"Backlight Polarity": 17105665})
+
 
     def get_name_id_list(self):
         data_sort = "Platform Information"
@@ -676,7 +717,7 @@ class SusiIot(IMotherboard, IGpio, IMemory):
             return None
 
     @property
-    def disk_total_disk_space(self):
+    def total_disk_space(self):
         try:
             id_number = self.susi_id_name_table["Disk - Total Disk Space"]
             result = self.get_data_by_id(id_number)
@@ -687,53 +728,9 @@ class SusiIot(IMotherboard, IGpio, IMemory):
             return None
 
     @property
-    def disk_free_disk_space(self):
+    def free_disk_space(self):
         try:
             id_number = self.susi_id_name_table["Disk - Free Disk Space"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                logger.debug(f"{id_number} result is {result}")
-            return result["v"]
-        except:
-            return None
-
-    @property
-    def disk_media_recovery_total_disk_space(self):
-        try:
-            id_number = self.susi_id_name_table["Disk -media-recovery Total Disk Space"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                logger.debug(f"{id_number} result is {result}")
-            return result["v"]
-        except:
-            return None
-
-    @property
-    def disk_media_recovery_free_disk_space(self):
-        try:
-            id_number = self.susi_id_name_table["Disk -media-recovery Free Disk Space"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                logger.debug(f"{id_number} result is {result}")
-            return result["v"]
-        except:
-            return None
-
-    @property
-    def disk_home_total_disk_space(self):
-        try:
-            id_number = self.susi_id_name_table["Disk -home Total Disk Space"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                logger.debug(f"{id_number} result is {result}")
-            return result["v"]
-        except:
-            return None
-
-    @property
-    def disk_free_disk_space(self):
-        try:
-            id_number = self.susi_id_name_table["Disk -home Free Disk Space"]
             result = self.get_data_by_id(id_number)
             if not result:
                 logger.debug(f"{id_number} result is {result}")
