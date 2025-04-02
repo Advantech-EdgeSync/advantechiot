@@ -5,7 +5,3 @@ from .imemory import IMemory
 from .idisk import IDisk
 from .susiiot import SusiIot
 from .device import Device
-from .installation import install
-from .uninstallation import uninstall
-# from . import installation
-# from . import uninstallation
