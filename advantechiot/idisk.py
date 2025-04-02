@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class IDisk(ABC):
     @property
     @abstractmethod

@@ -36,7 +36,7 @@ class IMemory(ABC):
         pass
 
     @abstractmethod
-    def get_memory_week_year(self, memory_number: int) -> str:
+    def get_memory_manufacturing_date_code(self, memory_number: int) -> str:
         pass
 
     @abstractmethod

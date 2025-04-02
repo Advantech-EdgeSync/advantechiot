@@ -10,7 +10,7 @@ from .idisk import IDisk
 from typing import List
 
 
-class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
+class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
     def __init__(self):
         self.susi_iot_library = None
         self.json_library = None
@@ -40,6 +40,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             sys.exit("Error: Please run this program as root (use sudo).")
         else:
             return True
+
     def set_id_and_name_table(self):
         self.susi_name_id_table.update({"Platform Information": 65536})
         self.susi_name_id_table.update({"Board manufacturer": 16843777})
@@ -63,23 +64,32 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
         self.susi_name_id_table.update({"GPIO": 262144})
         self.susi_name_id_table.update({"SDRAM": 337117184})
         self.susi_name_id_table.update({"DiskInfo": 353697792})
-        self.susi_name_id_table.update({"Disk -volume Total Disk Space": 353697792})
-        self.susi_name_id_table.update({"Disk -volume Free Disk Space": 353697793})
-        self.susi_name_id_table.update({"Disk -etc-board Total Disk Space": 353698048})
-        self.susi_name_id_table.update({"Disk -etc-board Free Disk Space": 353698049})
-        self.susi_name_id_table.update({"Disk -etc-resolv.conf Total Disk Space": 353698304})
-        self.susi_name_id_table.update({"Disk -etc-resolv.conf Free Disk Space": 353698305})
-        self.susi_name_id_table.update({"Disk -etc-hostname Total Disk Space": 353698560})
-        self.susi_name_id_table.update({"Disk -etc-hostname Free Disk Space": 353698561})
-        self.susi_name_id_table.update({"Disk -etc-hosts Total Disk Space": 353698816})
-        self.susi_name_id_table.update({"Disk -etc-hosts Free Disk Space": 353698817})
+        self.susi_name_id_table.update(
+            {"Disk -volume Total Disk Space": 353697792})
+        self.susi_name_id_table.update(
+            {"Disk -volume Free Disk Space": 353697793})
+        self.susi_name_id_table.update(
+            {"Disk -etc-board Total Disk Space": 353698048})
+        self.susi_name_id_table.update(
+            {"Disk -etc-board Free Disk Space": 353698049})
+        self.susi_name_id_table.update(
+            {"Disk -etc-resolv.conf Total Disk Space": 353698304})
+        self.susi_name_id_table.update(
+            {"Disk -etc-resolv.conf Free Disk Space": 353698305})
+        self.susi_name_id_table.update(
+            {"Disk -etc-hostname Total Disk Space": 353698560})
+        self.susi_name_id_table.update(
+            {"Disk -etc-hostname Free Disk Space": 353698561})
+        self.susi_name_id_table.update(
+            {"Disk -etc-hosts Total Disk Space": 353698816})
+        self.susi_name_id_table.update(
+            {"Disk -etc-hosts Free Disk Space": 353698817})
         self.susi_name_id_table.update({"SUSIIoT Information": 256})
         self.susi_name_id_table.update({"SUSIIoT version": 257})
         self.susi_name_id_table.update({"Backlight": 327680})
         self.susi_name_id_table.update({"Backlight Brightness": 17106177})
         self.susi_name_id_table.update({"Backlight Frequency": 17105409})
         self.susi_name_id_table.update({"Backlight Polarity": 17105665})
-
 
     def get_name_id_list(self):
         data_sort = "Platform Information"
@@ -332,7 +342,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Boot up times"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -343,7 +353,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Running time (hours)"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -402,7 +412,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Voltage Vcore"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -413,7 +423,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Voltage 3.3V"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -424,7 +434,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Voltage 5V"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -435,7 +445,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Voltage 12V"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -446,7 +456,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Voltage 5V Standby"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -457,7 +467,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Voltage CMOS Battery"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -468,7 +478,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Voltage DC"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -479,7 +489,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Temperature System"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -490,7 +500,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Temperature System"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -564,7 +574,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table[memory_name+" "+"Memory Type"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result['sv']
         except:
             return None
@@ -575,7 +585,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table[memory_name+" "+"Module Type"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result['sv']
         except:
             return None
@@ -586,7 +596,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table[memory_name+" "+"Module Size"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result['v']
         except:
             return None
@@ -597,7 +607,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table[memory_name+" "+"Memory Speed"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result['v']
         except:
             return None
@@ -608,7 +618,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table[memory_name+" "+"Rank"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result['v']
         except:
             return None
@@ -619,7 +629,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table[memory_name+" "+"Voltage"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result['v']
         except:
             return None
@@ -630,19 +640,19 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table[memory_name+" "+"Bank"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
-            return result['v']
+                print(f"{id_number} result is {result}")
+            return result['sv']
         except:
             return None
 
-    def get_memory_week_year(self, memory_number=0):
+    def get_memory_manufacturing_date_code(self, memory_number=0):
         try:
             memory_name = self.memory_list[memory_number]
             id_number = self.susi_id_name_table[memory_name+" "+"Week Year"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
-            return result['v']
+                print(f"{id_number} result is {result}")
+            return result['sv']
         except:
             return None
 
@@ -652,7 +662,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table[memory_name+" "+"Temperature"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result['v']
         except:
             return None
@@ -664,8 +674,8 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
                                                 " "+"Write Protection"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
-            return result['v']
+                print(f"{id_number} result is {result}")
+            return result['sv']
         except:
             return None
 
@@ -676,7 +686,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
                                                 " "+"Module Manufacture"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result['sv']
         except:
             return None
@@ -688,7 +698,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
                                                 " "+"DRAM Manufacture"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result['sv']
         except:
             return None
@@ -699,7 +709,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table[memory_name+" "+"Part Number"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result['sv']
         except:
             return None
@@ -711,7 +721,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
                                                 " "+"Specific Data"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result['sv']
         except:
             return None
@@ -722,7 +732,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Disk - Total Disk Space"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -733,7 +743,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Disk - Free Disk Space"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -744,7 +754,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Fan Speed CPU"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -755,7 +765,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Fan Speed System"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -774,7 +784,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Backlight frequency"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -785,7 +795,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Backlight polarity"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -796,7 +806,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Backlight backlight"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
@@ -807,7 +817,7 @@ class SusiIot(IMotherboard, IGpio, IMemory,IDisk):
             id_number = self.susi_id_name_table["Backlight brightness"]
             result = self.get_data_by_id(id_number)
             if not result:
-                logger.debug(f"{id_number} result is {result}")
+                print(f"{id_number} result is {result}")
             return result["v"]
         except:
             return None
