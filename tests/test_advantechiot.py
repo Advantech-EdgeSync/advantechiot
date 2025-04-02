@@ -90,7 +90,7 @@ class TestMemory(unittest.TestCase):
         handler = advantechiot.Device()
         for i in range(handler.memory.memory_count):
             print(
-                f"memory{i} voltage:{handler.memory.get_memory_voltage(i)}")
+                f"memory{i} voltage:{handler.memory.get_memory_voltage(i)} v")
 
     def test_get_memory_bank(self):
         handler = advantechiot.Device()

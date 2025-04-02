@@ -608,7 +608,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             result = self.get_data_by_id(id_number)
             if not result:
                 print(f"{id_number} result is {result}")
-            return result['v']
+            return result['sv']
         except:
             return None
 
