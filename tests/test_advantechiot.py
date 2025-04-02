@@ -42,18 +42,72 @@ class TestGpio(unittest.TestCase):
         handler = advantechiot.Device()
         print()
         print(handler.gpio.pins)
-        
+
     def test_get_gpio_direction(self):
         handler = advantechiot.Device()
         print()
         for i in range(handler.gpio.gpio_counter):
             print(f"GPIO{i}, direction:{handler.gpio.get_gpio_direction(i)}")
 
+    def test_set_gpio_direction(self):
+        handler = advantechiot.Device()
+        origin = 0
+        changed = 0
+        print()
+        for gpio_number in range(handler.gpio.gpio_counter):
+            origin = handler.gpio.get_gpio_direction(gpio_number)
+            changed = origin ^ 1
+            result = handler.gpio.set_gpio_direction(gpio_number, changed)
+            if not result:
+                print(
+                    f"set GPIO direction {gpio_number} from {origin} to {changed}, fail")
+                exit(1)
+            print(
+                f"set GPIO direction {gpio_number} from {origin} to {changed}, successfully")
+            handler.gpio.set_gpio_direction(gpio_number, origin)
+            if not result:
+                print(
+                    f"set GPIO direction {gpio_number} from {origin} to {changed}, fail")
+                exit(1)
+            self.assertEqual(
+                handler.gpio.get_gpio_direction(gpio_number), origin)
+            print(
+                f"set GPIO direction {gpio_number} from {changed} to {origin}, successfully")
+
     def test_get_gpio_level(self):
         handler = advantechiot.Device()
         print()
         for i in range(handler.gpio.gpio_counter):
             print(f"GPIO{i}, level:{handler.gpio.get_gpio_level(i)}")
+
+    def test_set_gpio_level(self):
+        handler = advantechiot.Device()
+        origin = 0
+        changed = 0
+        print()
+        for gpio_number in range(handler.gpio.gpio_counter):
+            origin = handler.gpio.get_gpio_level(gpio_number)
+            changed = origin ^ 1
+            result = handler.gpio.set_gpio_level(gpio_number, changed)
+            if result == False:
+                print(
+                    f"set GPIO{gpio_number} level {result}, Please check the direction; it must be output.")
+                continue
+            if result == None:
+                print(f"GPIO{gpio_number} is not exist")
+                continue
+            print(
+                f"set GPIO{gpio_number} level from {origin} to {changed}, successfully")
+            handler.gpio.set_gpio_level(gpio_number, origin)
+            if result == False:
+                print(
+                    f"set GPIO{gpio_number} level {result}, Please check the direction; it must be output.")
+                continue
+            if result == None:
+                print(f"GPIO{gpio_number} is not exist")
+                continue
+            print(
+                f"set GPIO{gpio_number} level from {changed} to {origin}, successfully")
 
 
 class TestMemory(unittest.TestCase):

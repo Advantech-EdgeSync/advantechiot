@@ -735,7 +735,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         try:
             id_number = 353697792
             result = self.get_data_by_id(id_number)
-            result=result['e'][0]
+            result = result['e'][0]
             if not result:
                 print(f"{id_number} result is {result}")
             return result["v"]
@@ -870,7 +870,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             return float(result["v"])
         except:
             pass
-    
+
     @property
     def fan_source(self) -> List[str]:
         pass
