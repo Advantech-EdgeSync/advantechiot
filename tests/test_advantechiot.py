@@ -60,86 +60,101 @@ class TestMemory(unittest.TestCase):
         handler = advantechiot.device.Device()
         print(f"memory count: {handler.memory.memory_count}")
         for i in range(handler.memory.memory_count):
-            print(f"memory{i} memory manufacture data:{handler.memory.get_memory_type(i)}")
+            print(
+                f"memory{i} memory manufacture data:{handler.memory.get_memory_type(i)}")
 
     def test_get_module_type(self):
         handler = advantechiot.device.Device()
         print(f"memory count: {handler.memory.memory_count}")
         for i in range(handler.memory.memory_count):
-            print(f"memory{i} memory manufacture data:{handler.memory.get_module_type(i)}")
+            print(
+                f"memory{i} memory manufacture data:{handler.memory.get_module_type(i)}")
 
     def test_get_memory_size_in_GB(self):
         handler = advantechiot.device.Device()
         print(f"memory count: {handler.memory.memory_count}")
         for i in range(handler.memory.memory_count):
-            print(f"memory{i} memory manufacture data:{handler.memory.get_memory_size_in_GB(i)}")
+            print(
+                f"memory{i} memory manufacture data:{handler.memory.get_memory_size_in_GB(i)}")
 
     def test_get_memory_speed(self):
         handler = advantechiot.device.Device()
         print(f"memory count: {handler.memory.memory_count}")
         for i in range(handler.memory.memory_count):
-            print(f"memory{i} memory manufacture data:{handler.memory.get_memory_speed(i)}")
+            print(
+                f"memory{i} memory manufacture data:{handler.memory.get_memory_speed(i)}")
 
     def test_get_memory_rank(self):
         handler = advantechiot.device.Device()
         print(f"memory count: {handler.memory.memory_count}")
         for i in range(handler.memory.memory_count):
-            print(f"memory{i} memory manufacture data:{handler.memory.get_memory_rank(i)}")
+            print(
+                f"memory{i} memory manufacture data:{handler.memory.get_memory_rank(i)}")
 
     def test_get_memory_voltage(self):
         handler = advantechiot.device.Device()
         print(f"memory count: {handler.memory.memory_count}")
         for i in range(handler.memory.memory_count):
-            print(f"memory{i} memory manufacture data:{handler.memory.get_memory_voltage(i)}")
+            print(
+                f"memory{i} memory manufacture data:{handler.memory.get_memory_voltage(i)}")
 
     def test_get_memory_bank(self):
         handler = advantechiot.device.Device()
         print(f"memory count: {handler.memory.memory_count}")
         for i in range(handler.memory.memory_count):
-            print(f"memory{i} memory manufacture data:{handler.memory.get_memory_bank(i)}")
+            print(
+                f"memory{i} memory manufacture data:{handler.memory.get_memory_bank(i)}")
 
     def test_get_memory_week_year(self):
         handler = advantechiot.device.Device()
         print(f"memory count: {handler.memory.memory_count}")
         for i in range(handler.memory.memory_count):
-            print(f"memory{i} memory manufacture data:{handler.memory.get_memory_week_year(i)}")
+            print(
+                f"memory{i} memory manufacture data:{handler.memory.get_memory_week_year(i)}")
 
     def test_get_memory_temperature(self):
         handler = advantechiot.device.Device()
         print(f"memory count: {handler.memory.memory_count}")
         for i in range(handler.memory.memory_count):
-            print(f"memory{i} memory temperature:{handler.memory.get_memory_temperature(i)}")
+            print(
+                f"memory{i} memory temperature:{handler.memory.get_memory_temperature(i)}")
 
     def test_get_memory_write_protection(self):
         handler = advantechiot.device.Device()
         print(f"memory count: {handler.memory.memory_count}")
         for i in range(handler.memory.memory_count):
-            print(f"memory{i} write protection:{handler.memory.get_memory_write_protection(i)}")
+            print(
+                f"memory{i} write protection:{handler.memory.get_memory_write_protection(i)}")
 
     def test_get_memory_module_manufacture(self):
         handler = advantechiot.device.Device()
         print(f"memory count: {handler.memory.memory_count}")
         for i in range(handler.memory.memory_count):
-            print(f"memory{i} module manufacture:{handler.memory.get_memory_module_manufacture(i)}")
+            print(
+                f"memory{i} module manufacture:{handler.memory.get_memory_module_manufacture(i)}")
 
     # @unittest.skip("todo")
     def test_get_memory_manufacture(self):
         handler = advantechiot.device.Device()
         print(f"memory count: {handler.memory.memory_count}")
         for i in range(handler.memory.memory_count):
-            print(f"memory{i} manufacture:{handler.memory.get_memory_manufacture(i)}")
+            print(
+                f"memory{i} manufacture:{handler.memory.get_memory_manufacture(i)}")
 
     def test_get_memory_part_number(self):
         handler = advantechiot.device.Device()
         print(f"memory count: {handler.memory.memory_count}")
         for i in range(handler.memory.memory_count):
-            print(f"memory{i} part number:{handler.memory.get_memory_part_number(i)}")
+            print(
+                f"memory{i} part number:{handler.memory.get_memory_part_number(i)}")
 
     def test_get_memory_specific(self):
         handler = advantechiot.device.Device()
         print(f"memory count: {handler.memory.memory_count}")
         for i in range(handler.memory.memory_count):
-            print(f"memory{i} specific:{handler.memory.get_memory_specific(i)}")
+            print(
+                f"memory{i} specific:{handler.memory.get_memory_specific(i)}")
+
 
 class TestDisk(unittest.TestCase):
     def test_disk_total_disk_space(self):
@@ -152,19 +167,24 @@ class TestDisk(unittest.TestCase):
 
     def test_disk_media_recovery_total_disk_space(self):
         handler = advantechiot.device.Device()
-        print(f"Media Recovery Total Disk Space: {handler.disk.disk_media_recovery_total_disk_space}")
+        print(
+            f"Media Recovery Total Disk Space: {handler.disk.disk_media_recovery_total_disk_space}")
 
     def test_disk_media_recovery_free_disk_space(self):
         handler = advantechiot.device.Device()
-        print(f"Media Recovery Free Disk Space: {handler.disk.disk_media_recovery_free_disk_space}")
+        print(
+            f"Media Recovery Free Disk Space: {handler.disk.disk_media_recovery_free_disk_space}")
 
     def test_disk_home_total_disk_space(self):
         handler = advantechiot.device.Device()
-        print(f"Home Total Disk Space: {handler.disk.disk_home_total_disk_space}")
+        print(
+            f"Home Total Disk Space: {handler.disk.disk_home_total_disk_space}")
 
     def test_disk_home_free_disk_space(self):
         handler = advantechiot.device.Device()
-        print(f"Home Free Disk Space: {handler.disk.disk_home_free_disk_space}")
+        print(
+            f"Home Free Disk Space: {handler.disk.disk_home_free_disk_space}")
+
 
 if __name__ == '__main__':
     unittest.main()
