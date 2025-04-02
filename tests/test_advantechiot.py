@@ -78,7 +78,7 @@ class TestMemory(unittest.TestCase):
         handler = advantechiot.Device()
         for i in range(handler.memory.memory_count):
             print(
-                f"memory{i} speed:{handler.memory.get_memory_speed(i)}")
+                f"memory{i} speed:{handler.memory.get_memory_speed(i)} MT/s")
 
     def test_get_memory_rank(self):
         handler = advantechiot.Device()
