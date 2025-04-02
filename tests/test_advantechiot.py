@@ -26,6 +26,7 @@ class TestMotherboard(unittest.TestCase):
 
     def test_temperature_sources(self):
         handler = advantechiot.Device()
+        print()
         for source in handler.motherboard.temperature_sources:
             print(source)
 
@@ -37,17 +38,20 @@ class TestMotherboard(unittest.TestCase):
 
 
 class TestGpio(unittest.TestCase):
-    def test_get_gpio_direction(self):
+    def test_get_gpio_pins(self):
         handler = advantechiot.Device()
         print()
         print(handler.gpio.pins)
+        
+    def test_get_gpio_direction(self):
+        handler = advantechiot.Device()
+        print()
         for i in range(handler.gpio.gpio_counter):
             print(f"GPIO{i}, direction:{handler.gpio.get_gpio_direction(i)}")
 
     def test_get_gpio_level(self):
         handler = advantechiot.Device()
         print()
-        print(handler.gpio.pins)
         for i in range(handler.gpio.gpio_counter):
             print(f"GPIO{i}, level:{handler.gpio.get_gpio_level(i)}")
 
