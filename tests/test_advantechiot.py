@@ -145,11 +145,11 @@ class TestMemory(unittest.TestCase):
 class TestDisk(unittest.TestCase):
     def test_total_disk_space(self):
         handler = advantechiot.Device()
-        print(f"Total Disk Space: {handler.disk.total_disk_space}")
+        print(f"Total Disk Space: {handler.disk.total_disk_space} MB")
 
     def test_free_disk_space(self):
         handler = advantechiot.Device()
-        print(f"Free Disk Space: {handler.disk.free_disk_space}")
+        print(f"Free Disk Space: {handler.disk.free_disk_space} MB")
 
 
 if __name__ == '__main__':

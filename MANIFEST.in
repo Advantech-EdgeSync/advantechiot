@@ -1,2 +1,0 @@
-recursive-include advantechiot/Driver_x86 *
-recursive-include advantechiot/Driver_arm *
