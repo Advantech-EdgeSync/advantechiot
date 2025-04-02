@@ -41,6 +41,9 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         else:
             return True
 
+    def read_mock_data(self, data):
+        self.susi_information = data
+
     def set_id_and_name_table(self):
         self.susi_name_id_table.update({"Platform Information": 65536})
         self.susi_name_id_table.update({"Board manufacturer": 16843777})

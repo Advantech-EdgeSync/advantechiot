@@ -30,3 +30,12 @@ class IMotherboard(ABC):
     @abstractmethod
     def get_temperature(self, temperature_source) -> float:
         pass
+
+    @property
+    @abstractmethod
+    def fan_source(self) -> List[str]:
+        pass
+
+    @abstractmethod
+    def get_fan_speed(self, temperature_source) -> float:
+        pass

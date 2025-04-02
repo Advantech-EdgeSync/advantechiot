@@ -20,6 +20,7 @@ class TestMotherboard(unittest.TestCase):
 
     def test_get_voltage(self):
         handler = advantechiot.Device()
+        print()
         for source in handler.motherboard.voltage_sources:
             print(f"{source}: {handler.motherboard.get_voltage(source)}V")
 
