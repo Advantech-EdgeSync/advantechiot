@@ -18,3 +18,5 @@ Driver_x86/libjansson.so
 Driver_x86/libSUSIAI.so
 *core*
 *.pyc
+build/
+advantechiot.egg-info/
