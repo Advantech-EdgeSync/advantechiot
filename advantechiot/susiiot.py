@@ -868,6 +868,13 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             return float(result["v"])
         except:
             pass
+    
+    @property
+    def fan_source(self) -> List[str]:
+        pass
+
+    def get_fan_speed(self, fan_source) -> int:
+        pass
 
     @property
     def pins(self) -> List[str]:

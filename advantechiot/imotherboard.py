@@ -37,5 +37,5 @@ class IMotherboard(ABC):
         pass
 
     @abstractmethod
-    def get_fan_speed(self, temperature_source) -> float:
+    def get_fan_speed(self, fan_source) -> float:
         pass
