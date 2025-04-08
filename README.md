@@ -33,16 +33,25 @@ SUSI IoT is an IoT-oriented library aiming at simplifying the complicated IoT in
 ### SUSI AI
 SUSI AI is used to get and set information of AI accelerated devices, such as NVIDIA x86 GPU card, NVIDIA ARM platform, and Intel x86 CPU / GPU; meanwhile, information of docker image and container could be retrieved as well.
 
+# SUSI Iot with Python
+
+## Install SUSI IOT
+https://github.com/ADVANTECH-Corp/SUSI
+
+* ReleasePackage
+* Choice ARM or x86 Architecture
+* Choice Board Type
+* Un-Zip and Run Installation
 
 ## Build Docker Image
 ```sh
 docker build -t susiiot_ubuntu:1.0.1 .
 ```
 ## Run Docker Container
+In the Linux Container
 ```sh
 sudo docker run \
     -it \
-    --rm \
     --name susi_iot_demo \
     --privileged \
     -v /sys/firmware/efi/efivars/:/sys/firmware/efi/efivars/ \
@@ -51,11 +60,10 @@ sudo docker run \
     susiiot_ubuntu:1.0.1 \
     /bin/bash
 ```
-in yocto
+In the Yocto Container
 ```sh
 sudo docker run \
     -it \
-    --rm \
     --name susi_iot_demo \
     --privileged \
     -v /etc/board/:/etc/board/ \
@@ -63,28 +71,11 @@ sudo docker run \
     susiiot_ubuntu:1.0.1 \
     /bin/bash
 ```
-## Set Environment on Linux Host
+## PIP Install advantechiot Package
 ```sh
-./docker_run.sh
+pip install git+https://github.com/EdgeSync-Adv/advantechiot.git
 ```
-## Run Python Demo
+## Demo Example
 ```sh
-apt-get update && \
-    apt-get install -y python3 python3-pip libjansson4
+tests\test_advantechiot.py
 ```
-### On Linux Host
-```sh
-sudo python3 -m unittest -v test_susiiot.py
-```
-### On Linux Container
-```sh
-python3 -m unittest -v test_susiiot.py
-```
-
-### Run Test
-apt-get update && \
-    apt-get install -y git python3 python3-pip libjansson4 
-
-git clone https://github.com/likevintw/vincent77.git && \
-    cd vincent77 && \
-    sudo python3 -m unittest -v test_susiiot.TestCases > "$(date +\%Y\%m\%d\%H\%M\%S)_result.txt"
