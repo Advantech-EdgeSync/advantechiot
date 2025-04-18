@@ -15,21 +15,23 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         self.susi_iot_library = None
         self.json_library = None
         self.susi_information = None
-        self.gpio_list = []
-        self.memory_list = []
-        self.voltage_source_list = []
-        self.temperature_source_list = []
-        self.susi_id_name_table = {}
-        self.susi_name_id_table = {}
+        self.device_id_list=[]
+        # self.gpio_list = []
+        # self.memory_list = []
+        # self.voltage_source_list = []
+        # self.temperature_source_list = []
+        # self.susi_id_name_table = {}
+        # self.susi_name_id_table = {}
 
         self.check_root_authorization()
         self.import_library()
         self.initialize_library()
         self.susi_iot_library.SusiIoTInitialize()
         self.get_susi_information_string()
-        self.get_gpio_list()
-        self.get_sdram_list()
-        self.get_name_id_list()
+        self.get_device_id_list()
+        # self.get_gpio_list()
+        # self.get_sdram_list()
+        # self.get_name_id_list()
 
     def __del__(self):
         pass
@@ -41,190 +43,156 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         else:
             return True
 
-    def read_mock_data(self, data):
-        self.susi_information = data
 
-    def set_id_and_name_table(self):
-        self.susi_name_id_table.update({"Platform Information": 65536})
-        self.susi_name_id_table.update({"Board manufacturer": 16843777})
-        self.susi_name_id_table.update({"Board name": 16843778})
-        self.susi_name_id_table.update({"BIOS revision": 16843781})
-        self.susi_name_id_table.update({"Driver version": 16843265})
-        self.susi_name_id_table.update({"Library version": 16843266})
-        self.susi_name_id_table.update({"Hardware Monitor": 131072})
-        self.susi_name_id_table.update({"Voltage Vcore": 16908801})
-        self.susi_name_id_table.update({"Voltage 3.3V": 16908804})
-        self.susi_name_id_table.update({"Voltage 5V": 16908805})
-        self.susi_name_id_table.update({"Voltage 12V": 16908806})
-        self.susi_name_id_table.update({"Voltage 5V Standby": 16908807})
-        self.susi_name_id_table.update({"Voltage CMOS Battery": 16908809})
-        self.susi_name_id_table.update({"Voltage VCC3V": 16908817})
-        self.susi_name_id_table.update({"Temperature CPU": 16908545})
-        self.susi_name_id_table.update({"Temperature System": 16908547})
-        self.susi_name_id_table.update({"Fan Speed CPUFAN1": 16909057})
-        self.susi_name_id_table.update({"Fan Speed SYSFAN1": 16909058})
-        self.susi_name_id_table.update({"Fan Speed SYSFAN2": 16909060})
-        self.susi_name_id_table.update({"GPIO": 262144})
-        self.susi_name_id_table.update({"SDRAM": 337117184})
-        self.susi_name_id_table.update({"DiskInfo": 353697792})
-        self.susi_name_id_table.update(
-            {"Disk -volume Total Disk Space": 353697792})
-        self.susi_name_id_table.update(
-            {"Disk -volume Free Disk Space": 353697793})
-        self.susi_name_id_table.update(
-            {"Disk -etc-board Total Disk Space": 353698048})
-        self.susi_name_id_table.update(
-            {"Disk -etc-board Free Disk Space": 353698049})
-        self.susi_name_id_table.update(
-            {"Disk -etc-resolv.conf Total Disk Space": 353698304})
-        self.susi_name_id_table.update(
-            {"Disk -etc-resolv.conf Free Disk Space": 353698305})
-        self.susi_name_id_table.update(
-            {"Disk -etc-hostname Total Disk Space": 353698560})
-        self.susi_name_id_table.update(
-            {"Disk -etc-hostname Free Disk Space": 353698561})
-        self.susi_name_id_table.update(
-            {"Disk -etc-hosts Total Disk Space": 353698816})
-        self.susi_name_id_table.update(
-            {"Disk -etc-hosts Free Disk Space": 353698817})
-        self.susi_name_id_table.update({"SUSIIoT Information": 256})
-        self.susi_name_id_table.update({"SUSIIoT version": 257})
-        self.susi_name_id_table.update({"Backlight": 327680})
-        self.susi_name_id_table.update({"Backlight Brightness": 17106177})
-        self.susi_name_id_table.update({"Backlight Frequency": 17105409})
-        self.susi_name_id_table.update({"Backlight Polarity": 17105665})
+    def extract_ids(self,obj, result=None):
+        if result is None:
+            result = []
 
-    def get_name_id_list(self):
-        data_sort = "Platform Information"
-        try:
-            id_value = self.susi_information[data_sort]["id"]
-            self.susi_id_name_table.update({data_sort: id_value})
-            for item in self.susi_information[data_sort]["e"]:
-                self.susi_id_name_table.update({item["n"]: item["id"]})
-        except:
-            pass
+        if isinstance(obj, dict):
+            # 如果有 id，就加入 list
+            if "id" in obj:
+                result.append(obj["id"])
+            for value in obj.values():
+                self.extract_ids(value, result)
 
-        data_sort = "Hardware Monitor"
-        try:
-            id_value = self.susi_information[data_sort]["id"]
-            self.susi_id_name_table.update({data_sort: id_value})
-            for item in self.susi_information[data_sort]:
-                if "id" in item or "bn" in item:
-                    pass
-                else:
-                    sources = self.susi_information[data_sort][item]['e']
-                    for source in sources:
-                        self.susi_id_name_table.update(
-                            {item+" "+source["n"]: source["id"]})
-        except:
-            pass
+        elif isinstance(obj, list):
+            for item in obj:
+                self.extract_ids(item, result)
 
-        data_sort = "Voltage"
-        try:
-            for key in self.susi_id_name_table.keys():
-                if data_sort in key:
-                    self.voltage_source_list.append(key)
-        except:
-            pass
+        return result
+    
+    def get_device_id_list(self):
+        self.device_id_list = self.extract_ids(self.susi_information)
+    
+    # def read_mock_data(self, data):
+    #     self.susi_information = data
 
-        data_sort = "Temperature"
-        try:
-            for key in self.susi_id_name_table.keys():
-                if data_sort in key:
-                    self.temperature_source_list.append(key)
-        except:
-            pass
+    # def get_name_id_list(self):
+    #     data_sort = "Platform Information"
+    #     try:
+    #         id_value = self.susi_information[data_sort]["id"]
+    #         self.susi_id_name_table.update({data_sort: id_value})
+    #         for item in self.susi_information[data_sort]["e"]:
+    #             self.susi_id_name_table.update({item["n"]: item["id"]})
+    #     except:
+    #         pass
 
-        data_sort = "GPIO"
-        try:
-            id_value = self.susi_information[data_sort]["id"]
-            self.susi_id_name_table.update({data_sort: id_value})
-            for data_index in self.susi_information[data_sort].keys():
-                if "GPIO" in data_index:
-                    self.susi_id_name_table.update(
-                        {data_index: self.susi_information[data_sort][data_index]["id"]})
-                    for informations in self.susi_information[data_sort][data_index]["e"]:
-                        self.susi_id_name_table.update(
-                            {data_index+" "+informations["n"]: informations["id"]})
-        except:
-            pass
+    #     data_sort = "Hardware Monitor"
+    #     try:
+    #         id_value = self.susi_information[data_sort]["id"]
+    #         self.susi_id_name_table.update({data_sort: id_value})
+    #         for item in self.susi_information[data_sort]:
+    #             if "id" in item or "bn" in item:
+    #                 pass
+    #             else:
+    #                 sources = self.susi_information[data_sort][item]['e']
+    #                 for source in sources:
+    #                     self.susi_id_name_table.update(
+    #                         {item+" "+source["n"]: source["id"]})
+    #     except:
+    #         pass
 
-        data_sort = "SDRAM"
-        try:
-            id_value = self.susi_information[data_sort]["id"]
-            self.susi_id_name_table.update({data_sort: id_value})
-            for data_index in self.susi_information[data_sort].keys():
-                if "SDRAM" in data_index:
-                    self.susi_id_name_table.update(
-                        {data_index: self.susi_information[data_sort][data_index]["id"]})
-                    for informations in self.susi_information[data_sort][data_index]["e"]:
-                        self.susi_id_name_table.update(
-                            {data_index+" "+informations["n"]: informations["id"]})
-        except:
-            pass
+    #     data_sort = "Voltage"
+    #     try:
+    #         for key in self.susi_id_name_table.keys():
+    #             if data_sort in key:
+    #                 self.voltage_source_list.append(key)
+    #     except:
+    #         pass
 
-        data_sort = "DiskInfo"
-        try:
-            id_value = self.susi_information[data_sort]["id"]
-            self.susi_id_name_table.update({data_sort: id_value})
-            for data_index in self.susi_information[data_sort]["e"]:
-                self.susi_id_name_table.update(
-                    {data_index["n"]: data_index["id"]})
-        except:
-            pass
+    #     data_sort = "Temperature"
+    #     try:
+    #         for key in self.susi_id_name_table.keys():
+    #             if data_sort in key:
+    #                 self.temperature_source_list.append(key)
+    #     except:
+    #         pass
 
-        data_sort = "SUSIIoT Information"
-        try:
-            id_value = self.susi_information[data_sort]["id"]
-            self.susi_id_name_table.update({data_sort: id_value})
-            for data_index in self.susi_information[data_sort]["e"]:
-                self.susi_id_name_table.update(
-                    {data_index["n"]: data_index["id"]})
-        except:
-            pass
+    #     data_sort = "GPIO"
+    #     try:
+    #         id_value = self.susi_information[data_sort]["id"]
+    #         self.susi_id_name_table.update({data_sort: id_value})
+    #         for data_index in self.susi_information[data_sort].keys():
+    #             if "GPIO" in data_index:
+    #                 self.susi_id_name_table.update(
+    #                     {data_index: self.susi_information[data_sort][data_index]["id"]})
+    #                 for informations in self.susi_information[data_sort][data_index]["e"]:
+    #                     self.susi_id_name_table.update(
+    #                         {data_index+" "+informations["n"]: informations["id"]})
+    #     except:
+    #         pass
 
-        data_sort = "M2Talk"
-        try:
-            id_value = self.susi_information[data_sort]["id"]
-            self.susi_id_name_table.update({data_sort: id_value})
-            for data_index in self.susi_information[data_sort].keys():
-                if "Device" in data_index:
-                    sources = self.susi_information[data_sort][data_index]['e']
-                    for source in sources:
-                        self.susi_id_name_table.update(
-                            {data_sort+" "+source['n']: source['id']})
-        except:
-            pass
+    #     data_sort = "SDRAM"
+    #     try:
+    #         id_value = self.susi_information[data_sort]["id"]
+    #         self.susi_id_name_table.update({data_sort: id_value})
+    #         for data_index in self.susi_information[data_sort].keys():
+    #             if "SDRAM" in data_index:
+    #                 self.susi_id_name_table.update(
+    #                     {data_index: self.susi_information[data_sort][data_index]["id"]})
+    #                 for informations in self.susi_information[data_sort][data_index]["e"]:
+    #                     self.susi_id_name_table.update(
+    #                         {data_index+" "+informations["n"]: informations["id"]})
+    #     except:
+    #         pass
 
-        data_sort = "Backlight"
-        try:
-            id_value = self.susi_information[data_sort]["id"]
-            self.susi_id_name_table.update({data_sort: id_value})
-            for data_index in self.susi_information[data_sort].keys():
-                if "Backlight" in data_index:
-                    sources = self.susi_information[data_sort][data_index]['e']
-                    for source in sources:
-                        self.susi_id_name_table.update(
-                            {data_sort+" "+source['n']: source['id']})
-        except:
-            pass
+    #     data_sort = "DiskInfo"
+    #     try:
+    #         id_value = self.susi_information[data_sort]["id"]
+    #         self.susi_id_name_table.update({data_sort: id_value})
+    #         for data_index in self.susi_information[data_sort]["e"]:
+    #             self.susi_id_name_table.update(
+    #                 {data_index["n"]: data_index["id"]})
+    #     except:
+    #         pass
+
+    #     data_sort = "SUSIIoT Information"
+    #     try:
+    #         id_value = self.susi_information[data_sort]["id"]
+    #         self.susi_id_name_table.update({data_sort: id_value})
+    #         for data_index in self.susi_information[data_sort]["e"]:
+    #             self.susi_id_name_table.update(
+    #                 {data_index["n"]: data_index["id"]})
+    #     except:
+    #         pass
+
+    #     data_sort = "M2Talk"
+    #     try:
+    #         id_value = self.susi_information[data_sort]["id"]
+    #         self.susi_id_name_table.update({data_sort: id_value})
+    #         for data_index in self.susi_information[data_sort].keys():
+    #             if "Device" in data_index:
+    #                 sources = self.susi_information[data_sort][data_index]['e']
+    #                 for source in sources:
+    #                     self.susi_id_name_table.update(
+    #                         {data_sort+" "+source['n']: source['id']})
+    #     except:
+    #         pass
+
+    #     data_sort = "Backlight"
+    #     try:
+    #         id_value = self.susi_information[data_sort]["id"]
+    #         self.susi_id_name_table.update({data_sort: id_value})
+    #         for data_index in self.susi_information[data_sort].keys():
+    #             if "Backlight" in data_index:
+    #                 sources = self.susi_information[data_sort][data_index]['e']
+    #                 for source in sources:
+    #                     self.susi_id_name_table.update(
+    #                         {data_sort+" "+source['n']: source['id']})
+    #     except:
+    #         pass
 
     def import_library(self):
-        current_dir = os.path.dirname(os.path.realpath(__file__))+"/"
         architecture = platform.machine()
         os_name = platform.system()
         susi_iot_library_path = ""
         json_library_path = ""
 
         if os_name == "Linux" and 'x86' in architecture.lower():
-            # susi_iot_library_path = current_dir+"libSusiIoT.x86.so"
-            # json_library_path = current_dir+"libjansson.x86.so"
             susi_iot_library_path = "/usr/lib/libSusiIoT.so"
             json_library_path = "/usr/lib/x86_64-linux-gnu/libjansson.so.4"
 
         elif os_name == "Linux" and 'aarch64' in architecture.lower():
-            # susi_iot_library_path = current_dir+"libSusiIoT.arm.so"
-            # json_library_path = current_dir+"libjansson.arm.so"
             susi_iot_library_path = "/lib/libSusiIoT.so"
             json_library_path = "/lib/aarch64-linux-gnu/libjansson.so.4"
 
@@ -244,8 +212,8 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             susi_iot_library_path, mode=ctypes.RTLD_GLOBAL)
 
     def initialize_library(self):
-        SusiIoTStatus_t = ctypes.c_int
-        SusiIoTId_t = ctypes.c_int
+        # SusiIoTStatus_t = ctypes.c_int
+        # SusiIoTId_t = ctypes.c_int
 
         self.susi_iot_library.SusiIoTInitialize.restype = ctypes.c_int
 
@@ -276,21 +244,21 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
         self.susi_iot_library.SusiIoTUninitialize.restype = ctypes.c_int
 
-    def get_gpio_list(self):
-        try:
-            for key in self.susi_information["GPIO"].keys():
-                if "GPIO" in key:
-                    self.gpio_list.append(key)
-        except:
-            pass
+    # def get_gpio_list(self):
+    #     try:
+    #         for key in self.susi_information["GPIO"].keys():
+    #             if "GPIO" in key:
+    #                 self.gpio_list.append(key)
+    #     except:
+    #         pass
 
-    def get_sdram_list(self):
-        try:
-            for key in self.susi_information["SDRAM"].keys():
-                if "SDRAM" in key:
-                    self.memory_list.append(key)
-        except:
-            pass
+    # def get_sdram_list(self):
+    #     try:
+    #         for key in self.susi_information["SDRAM"].keys():
+    #             if "SDRAM" in key:
+    #                 self.memory_list.append(key)
+    #     except:
+    #         pass
 
     def get_json_indent(self, n):
         json_max_indent = 0x1F
@@ -341,186 +309,157 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def boot_up_times(self):
-        try:
-            id_number = self.susi_id_name_table["Boot up times"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
+        id_number=16843010
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["v"]
 
     @property
     def running_time_in_hours(self):
-        try:
-            id_number = self.susi_id_name_table["Running time (hours)"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
+        id_number=16843011
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["v"]
 
     @property
-    def board_name(self):
-        try:
-            id_number = self.susi_id_name_table["Board name"]
-            return self.get_data_by_id(id_number)["sv"]
-        except:
+    def name(self):
+        id_number=16843778
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["sv"]
 
     @property
     def bios_revision(self):
-        try:
-            id_number = self.susi_id_name_table["BIOS revision"]
-            return self.get_data_by_id(id_number)["sv"]
-        except:
+        id_number=16843781
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["sv"]
 
     @property
     def firmware_name(self):
-        try:
-            id_number = self.susi_id_name_table["Firmware Name"]
-            return self.get_data_by_id(id_number)["sv"]
-        except:
+        id_number=16843784
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["sv"]
 
     @property
     def library_version(self):
-        try:
-            id_number = self.susi_id_name_table["Driver version"]
-            return self.get_data_by_id(id_number)["sv"]
-        except:
+        id_number=16843266
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["sv"]
 
     @property
     def driver_version(self):
-        try:
-            id_number = self.susi_id_name_table["Driver version"]
-            return self.get_data_by_id(id_number)["sv"]
-        except:
+        id_number=16843265
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["sv"]
 
     @property
     def firmware_version(self):
-        try:
-            id_number = self.susi_id_name_table["Firmware version"]
-            return self.get_data_by_id(id_number)["sv"]
-        except:
+        id_number=16843267
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["sv"]
 
     @property
     def voltage_vcore(self):
-        try:
-            id_number = self.susi_id_name_table["Voltage Vcore"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
+        id_number=16908801
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["v"]
 
     @property
     def voltage_3p3v(self):
-        try:
-            id_number = self.susi_id_name_table["Voltage 3.3V"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
+        id_number=16908804
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["v"]
 
     @property
     def voltage_5v(self):
-        try:
-            id_number = self.susi_id_name_table["Voltage 5V"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
+        id_number=16908805
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["v"]
 
     @property
     def voltage_12v(self):
-        try:
-            id_number = self.susi_id_name_table["Voltage 12V"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
+        id_number=16908806
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["v"]
 
     @property
     def voltage_5v_standby(self):
-        try:
-            id_number = self.susi_id_name_table["Voltage 5V Standby"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
+        id_number=16908807
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["v"]
 
     @property
     def voltage_cmos_battery(self):
-        try:
-            id_number = self.susi_id_name_table["Voltage CMOS Battery"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
+        id_number=16908809
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["v"]
 
     @property
     def dc_power(self):
-        try:
-            id_number = self.susi_id_name_table["Voltage DC"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
+        id_number=16908814
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["v"]
+    
+    @property
+    def voltage_3v(self):
+        id_number=16908817
+        result = self.get_data_by_id(id_number)
+        if not result:
+            return None
+        return result["v"]
 
     @property
-    def cpu_temperature_in_celsius(self):
-        try:
-            id_number = self.susi_id_name_table["Temperature System"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
+    def cpu_temperature(self):
+        id_number=16908545
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["v"]
 
     @property
     def system_temperature_in_celsius(self):
-        try:
-            id_number = self.susi_id_name_table["Temperature System"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
+        id_number=16908547
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
-
-    @property
-    def gpio_counter(self):
-        return len(self.gpio_list)
+        return result["v"]
 
     def get_gpio_direction(self, gpio_number=0):
-        try:
-            gpio_string = self.gpio_list[gpio_number]
-            id_number = self.susi_information["GPIO"][gpio_string]["e"][0]["id"]
-            return self.get_data_by_id(id_number)['bv']
-        except:
+        id_number=16908547
+        result = self.get_data_by_id(id_number+gpio_number)
+        if not result:
             return None
+        return result["v"]
 
     def set_gpio_direction(self, gpio_number=0, direction=0):
+        # todo
         try:
             gpio_string = self.gpio_list[gpio_number]
             id_number = self.susi_information["GPIO"][gpio_string]["e"][0]["id"]
@@ -532,14 +471,14 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             return None
 
     def get_gpio_level(self, gpio_number=0):
-        try:
-            gpio_string = self.gpio_list[gpio_number]
-            id_number = self.susi_information["GPIO"][gpio_string]["e"][1]["id"]
-            return self.get_data_by_id(id_number)['bv']
-        except:
+        id_number=17040129
+        result = self.get_data_by_id(id_number+gpio_number)
+        if not result:
             return None
+        return result["v"]
 
     def is_gpio_output(self, gpio_number=0):
+        # todo
         try:
             gpio_string = self.gpio_list[gpio_number]
             id_number = self.susi_information["GPIO"][gpio_string]["e"][0]["id"]
@@ -549,6 +488,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             return False
 
     def is_gpio_output_with_gpio_name(self, gpio_name=0):
+        # todo
         try:
             id_number = self.susi_information["GPIO"][gpio_name]["e"][0]["id"]
             if self.get_data_by_id(id_number)['bv'] == 0:
@@ -557,6 +497,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             return False
 
     def set_gpio_level(self, gpio_number=0, level=0):
+        # todo
         gpio_direction_is_output = self.is_gpio_output(gpio_number)
         if not gpio_direction_is_output:
             return False
@@ -572,162 +513,102 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         return len(self.memory_list)
 
     def get_memory_type(self, memory_number=0):
-        try:
-            memory_name = self.memory_list[memory_number]
-            id_number = self.susi_id_name_table[memory_name+" "+"Memory Type"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result['sv']
-        except:
+        id_number=337117441
+        result = self.get_data_by_id(id_number+memory_number)
+        if not result:
             return None
+        return result["v"]
 
     def get_module_type(self, memory_number=0):
-        try:
-            memory_name = self.memory_list[memory_number]
-            id_number = self.susi_id_name_table[memory_name+" "+"Module Type"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result['sv']
-        except:
+        id_number=337117697
+        result = self.get_data_by_id(id_number+memory_number)
+        if not result:
             return None
+        return result["v"]
 
     def get_memory_size_in_GB(self, memory_number=0):
-        try:
-            memory_name = self.memory_list[memory_number]
-            id_number = self.susi_id_name_table[memory_name+" "+"Module Size"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result['v']
-        except:
+        id_number=337117953
+        result = self.get_data_by_id(id_number+memory_number)
+        if not result:
             return None
+        return result["v"]
 
     def get_memory_speed(self, memory_number=0):
-        try:
-            memory_name = self.memory_list[memory_number]
-            id_number = self.susi_id_name_table[memory_name+" "+"Memory Speed"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result['sv']
-        except:
+        id_number=337118209
+        result = self.get_data_by_id(id_number+memory_number)
+        if not result:
             return None
+        return result["v"]
 
     def get_memory_rank(self, memory_number=0):
-        try:
-            memory_name = self.memory_list[memory_number]
-            id_number = self.susi_id_name_table[memory_name+" "+"Rank"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result['v']
-        except:
+        id_number=337118465
+        result = self.get_data_by_id(id_number+memory_number)
+        if not result:
             return None
+        return result["v"]
 
     def get_memory_voltage(self, memory_number=0):
-        try:
-            memory_name = self.memory_list[memory_number]
-            id_number = self.susi_id_name_table[memory_name+" "+"Voltage"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result['v']
-        except:
+        id_number=337118721
+        result = self.get_data_by_id(id_number+memory_number)
+        if not result:
             return None
+        return result["v"]
 
     def get_memory_bank(self, memory_number=0):
-        try:
-            memory_name = self.memory_list[memory_number]
-            id_number = self.susi_id_name_table[memory_name+" "+"Bank"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result['sv']
-        except:
+        id_number=337118977
+        result = self.get_data_by_id(id_number+memory_number)
+        if not result:
             return None
+        return result["v"]
 
     def get_memory_manufacturing_date_code(self, memory_number=0):
-        try:
-            memory_name = self.memory_list[memory_number]
-            id_number = self.susi_id_name_table[memory_name+" "+"Week Year"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result['sv']
-        except:
+        id_number=337119233
+        result = self.get_data_by_id(id_number+memory_number)
+        if not result:
             return None
+        return result["v"]
 
     def get_memory_temperature(self, memory_number=0):
-        try:
-            memory_name = self.memory_list[memory_number]
-            id_number = self.susi_id_name_table[memory_name+" "+"Temperature"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result['v']
-        except:
+        id_number=337119489
+        result = self.get_data_by_id(id_number+memory_number)
+        if not result:
             return None
+        return result["v"]
 
     def get_memory_write_protection(self, memory_number=0):
-        try:
-            memory_name = self.memory_list[memory_number]
-            id_number = self.susi_id_name_table[memory_name +
-                                                " "+"Write Protection"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result['sv']
-        except:
+        id_number=337119745
+        result = self.get_data_by_id(id_number+memory_number)
+        if not result:
             return None
+        return result["v"]
 
     def get_memory_module_manufacture(self, memory_number=0):
-        try:
-            memory_name = self.memory_list[memory_number]
-            id_number = self.susi_id_name_table[memory_name +
-                                                " "+"Module Manufacture"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result['sv']
-        except:
+        id_number=337120001
+        result = self.get_data_by_id(id_number+memory_number)
+        if not result:
             return None
+        return result["v"]
 
     def get_memory_manufacture(self, memory_number=0):
-        try:
-            memory_name = self.memory_list[memory_number]
-            id_number = self.susi_id_name_table[memory_name +
-                                                " "+"DRAM Manufacture"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result['sv']
-        except:
+        id_number=337120257
+        result = self.get_data_by_id(id_number+memory_number)
+        if not result:
             return None
+        return result["v"]
 
     def get_memory_part_number(self, memory_number=0):
-        try:
-            memory_name = self.memory_list[memory_number]
-            id_number = self.susi_id_name_table[memory_name+" "+"Part Number"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result['sv']
-        except:
+        id_number=337121537
+        result = self.get_data_by_id(id_number+memory_number)
+        if not result:
             return None
+        return result["v"]
 
     def get_memory_specific(self, memory_number=0):
-        try:
-            memory_name = self.memory_list[memory_number]
-            id_number = self.susi_id_name_table[memory_name +
-                                                " "+"Specific Data"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result['sv']
-        except:
+        id_number=337125633
+        result = self.get_data_by_id(id_number+memory_number)
+        if not result:
             return None
+        return result["v"]
 
     @property
     def total_disk_space(self):
@@ -744,115 +625,44 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def free_disk_space(self):
-        try:
-            id_number = 353697793
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
+        id_number=353697793
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["v"]
 
     @property
     def cpu_fan_speed(self):
-        try:
-            id_number = self.susi_id_name_table["Fan Speed CPU"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
+        id_number=16909057
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["v"]
 
     @property
     def system_fan_speed(self):
-        try:
-            id_number = self.susi_id_name_table["Fan Speed System"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
+        id_number=16909058
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
+        return result["v"]
 
     @property
     def susiiot_version(self):
-        try:
-            id_number = self.susi_id_name_table["version"]
-            return self.get_data_by_id(id_number)["sv"]
-        except:
+        id_number=257
+        result = self.get_data_by_id(id_number)
+        if not result:
             return None
-
-    @property
-    def backlight_frequency(self):
-        try:
-            id_number = self.susi_id_name_table["Backlight frequency"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
-            return None
-
-    @property
-    def backlight_polarity(self):
-        try:
-            id_number = self.susi_id_name_table["Backlight polarity"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
-            return None
-
-    @property
-    def backlight_backlight(self):
-        try:
-            id_number = self.susi_id_name_table["Backlight backlight"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
-            return None
-
-    @property
-    def backlight_brightness(self):
-        try:
-            id_number = self.susi_id_name_table["Backlight brightness"]
-            result = self.get_data_by_id(id_number)
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
-            return None
-
-    @property
-    def name(self) -> str:
-        try:
-            for item in self.susi_information["Platform Information"]["e"]:
-                if item["n"] == "Board name":
-                    return item["sv"]
-            return None
-        except:
-            return None
-
-    @property
-    def bios_revision(self) -> str:
-        try:
-            for item in self.susi_information["Platform Information"]["e"]:
-                if item["n"] == "BIOS revision":
-                    return item["sv"]
-            return None
-        except:
-            return None
+        return result["sv"]
 
     @property
     def voltage_sources(self) -> List[str]:
+        #todo
         return self.voltage_source_list
 
     @property
     def temperature_sources(self) -> List[str]:
+        #todo
         return self.temperature_source_list
 
     def get_voltage(self, voltage_source) -> float:
@@ -933,3 +743,4 @@ class JsonT(ctypes.Structure):
         ("type", ctypes.c_int),
         ("refcount", ctypes.c_size_t)
     ]
+
