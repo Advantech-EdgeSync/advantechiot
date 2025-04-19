@@ -618,14 +618,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         return self.get_data_by_id(gpio_target_initial+diff_number)['bv']
 
     def set_level(self, pin: str, level: GpioLevelType) -> None:
-        gpio_direction_is_output = self.gpio_table[pin]
-        if not gpio_direction_is_output:
-            return False
-            id_number = self.susi_information["GPIO"][pin]["e"][1]["id"]
-            result = self.set_value(id_number, level)
-            if result != 0:
-                return False
-        return True
+        pass
 
 
 class JsonType:
