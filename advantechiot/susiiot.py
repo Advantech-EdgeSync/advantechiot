@@ -15,23 +15,23 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         self.susi_iot_library = None
         self.json_library = None
         self.susi_information = None
-        self.device_id_list=[]
-        self.gpio_list = None
-        # self.memory_list = []
-        self.voltage_source_list = None
-        self.temperature_source_list = None
-        # self.susi_id_name_table = {}
-        # self.susi_name_id_table = {}
+        self.device_id_list = []
+        self.gpio_list = []
+        self.memory_list = []
+        self.voltage_source_list = []
+        self.temperature_source_list = []
 
         self.check_root_authorization()
         self.import_library()
         self.initialize_library()
         self.susi_iot_library.SusiIoTInitialize()
-        self.get_susi_information_string()
-        self.get_device_id_list()
-        # self.get_gpio_list()
-        # self.get_sdram_list()
-        # self.get_name_id_list()
+        susiiot_information = self.get_susi_information_string()
+        self.set_susiiot_information(susiiot_information)
+        self.set_device_id_list()
+        self.set_gpio_list()
+        self.set_voltage_sources()
+        self.set_memory_list()
+        self.set_temperature_sources()
 
     def __del__(self):
         pass
@@ -43,13 +43,11 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         else:
             return True
 
-
-    def extract_ids(self,obj, result=None):
+    def extract_ids(self, obj, result=None):
         if result is None:
             result = []
 
         if isinstance(obj, dict):
-            # 如果有 id，就加入 list
             if "id" in obj:
                 result.append(obj["id"])
             for value in obj.values():
@@ -60,127 +58,48 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
                 self.extract_ids(item, result)
 
         return result
-    
-    def get_device_id_list(self):
+
+    def set_device_id_list(self):
         self.device_id_list = self.extract_ids(self.susi_information)
-    
-    # def read_mock_data(self, data):
-    #     self.susi_information = data
 
-    # def get_name_id_list(self):
-    #     data_sort = "Platform Information"
-    #     try:
-    #         id_value = self.susi_information[data_sort]["id"]
-    #         self.susi_id_name_table.update({data_sort: id_value})
-    #         for item in self.susi_information[data_sort]["e"]:
-    #             self.susi_id_name_table.update({item["n"]: item["id"]})
-    #     except:
-    #         pass
+    def set_gpio_list(self):
+        self.gpio_list = []
+        initial = 17039617
+        for i in range(64):
+            if initial+i in self.device_id_list:
+                name = self.get_data_by_id(initial+i)['bn']
+                self.gpio_list.append(name)
+        return self.gpio_list
 
-    #     data_sort = "Hardware Monitor"
-    #     try:
-    #         id_value = self.susi_information[data_sort]["id"]
-    #         self.susi_id_name_table.update({data_sort: id_value})
-    #         for item in self.susi_information[data_sort]:
-    #             if "id" in item or "bn" in item:
-    #                 pass
-    #             else:
-    #                 sources = self.susi_information[data_sort][item]['e']
-    #                 for source in sources:
-    #                     self.susi_id_name_table.update(
-    #                         {item+" "+source["n"]: source["id"]})
-    #     except:
-    #         pass
+    def set_voltage_sources(self):
+        self.voltage_source_list = []
+        initial = 16908801
+        for i in range(20):
+            if initial+i in self.device_id_list:
+                name = self.get_data_by_id(initial+i)['n']
+                self.voltage_source_list.append(name)
+        return self.voltage_source_list
 
-    #     data_sort = "Voltage"
-    #     try:
-    #         for key in self.susi_id_name_table.keys():
-    #             if data_sort in key:
-    #                 self.voltage_source_list.append(key)
-    #     except:
-    #         pass
+    def set_temperature_sources(self):
+        self.temperature_source_list = []
+        # system temperature
+        initial = 16908545
+        for i in range(20):
+            if initial+i in self.device_id_list:
+                name = self.get_data_by_id(initial+i)['n']
+                self.temperature_source_list.append(name)
 
-    #     data_sort = "Temperature"
-    #     try:
-    #         for key in self.susi_id_name_table.keys():
-    #             if data_sort in key:
-    #                 self.temperature_source_list.append(key)
-    #     except:
-    #         pass
+        # memory temperature
+        initial = 337119489
+        for i in range(64):
+            if initial+i in self.device_id_list:
+                name = self.get_data_by_id(initial+i)['n']
+                self.temperature_source_list.append(name)
 
-    #     data_sort = "GPIO"
-    #     try:
-    #         id_value = self.susi_information[data_sort]["id"]
-    #         self.susi_id_name_table.update({data_sort: id_value})
-    #         for data_index in self.susi_information[data_sort].keys():
-    #             if "GPIO" in data_index:
-    #                 self.susi_id_name_table.update(
-    #                     {data_index: self.susi_information[data_sort][data_index]["id"]})
-    #                 for informations in self.susi_information[data_sort][data_index]["e"]:
-    #                     self.susi_id_name_table.update(
-    #                         {data_index+" "+informations["n"]: informations["id"]})
-    #     except:
-    #         pass
+        return self.temperature_source_list
 
-    #     data_sort = "SDRAM"
-    #     try:
-    #         id_value = self.susi_information[data_sort]["id"]
-    #         self.susi_id_name_table.update({data_sort: id_value})
-    #         for data_index in self.susi_information[data_sort].keys():
-    #             if "SDRAM" in data_index:
-    #                 self.susi_id_name_table.update(
-    #                     {data_index: self.susi_information[data_sort][data_index]["id"]})
-    #                 for informations in self.susi_information[data_sort][data_index]["e"]:
-    #                     self.susi_id_name_table.update(
-    #                         {data_index+" "+informations["n"]: informations["id"]})
-    #     except:
-    #         pass
-
-    #     data_sort = "DiskInfo"
-    #     try:
-    #         id_value = self.susi_information[data_sort]["id"]
-    #         self.susi_id_name_table.update({data_sort: id_value})
-    #         for data_index in self.susi_information[data_sort]["e"]:
-    #             self.susi_id_name_table.update(
-    #                 {data_index["n"]: data_index["id"]})
-    #     except:
-    #         pass
-
-    #     data_sort = "SUSIIoT Information"
-    #     try:
-    #         id_value = self.susi_information[data_sort]["id"]
-    #         self.susi_id_name_table.update({data_sort: id_value})
-    #         for data_index in self.susi_information[data_sort]["e"]:
-    #             self.susi_id_name_table.update(
-    #                 {data_index["n"]: data_index["id"]})
-    #     except:
-    #         pass
-
-    #     data_sort = "M2Talk"
-    #     try:
-    #         id_value = self.susi_information[data_sort]["id"]
-    #         self.susi_id_name_table.update({data_sort: id_value})
-    #         for data_index in self.susi_information[data_sort].keys():
-    #             if "Device" in data_index:
-    #                 sources = self.susi_information[data_sort][data_index]['e']
-    #                 for source in sources:
-    #                     self.susi_id_name_table.update(
-    #                         {data_sort+" "+source['n']: source['id']})
-    #     except:
-    #         pass
-
-    #     data_sort = "Backlight"
-    #     try:
-    #         id_value = self.susi_information[data_sort]["id"]
-    #         self.susi_id_name_table.update({data_sort: id_value})
-    #         for data_index in self.susi_information[data_sort].keys():
-    #             if "Backlight" in data_index:
-    #                 sources = self.susi_information[data_sort][data_index]['e']
-    #                 for source in sources:
-    #                     self.susi_id_name_table.update(
-    #                         {data_sort+" "+source['n']: source['id']})
-    #     except:
-    #         pass
+    def set_memory_list(self):
+        pass
 
     def import_library(self):
         architecture = platform.machine()
@@ -244,22 +163,6 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
         self.susi_iot_library.SusiIoTUninitialize.restype = ctypes.c_int
 
-    # def get_gpio_list(self):
-    #     try:
-    #         for key in self.susi_information["GPIO"].keys():
-    #             if "GPIO" in key:
-    #                 self.gpio_list.append(key)
-    #     except:
-    #         pass
-
-    # def get_sdram_list(self):
-    #     try:
-    #         for key in self.susi_information["SDRAM"].keys():
-    #             if "SDRAM" in key:
-    #                 self.memory_list.append(key)
-    #     except:
-    #         pass
-
     def get_json_indent(self, n):
         json_max_indent = 0x1F
         return n & json_max_indent
@@ -285,10 +188,13 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         capability_string = self.SusiIoTGetPFCapabilityString()
         capability_string = capability_string.decode('utf-8')
         try:
-            self.susi_information = json.loads(capability_string)
+            susi_information = json.loads(capability_string)
         except json.JSONDecodeError as e:
             print("Failed to parse JSON.:", e)
-        return self.susi_information
+        return susi_information
+
+    def set_susiiot_information(self, information):
+        self.susi_information = information
 
     def get_susi_information(self):
         json_max_indent = 0x1F
@@ -309,7 +215,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def boot_up_times(self):
-        id_number=16843010
+        id_number = 16843010
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -317,7 +223,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def running_time_in_hours(self):
-        id_number=16843011
+        id_number = 16843011
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -325,7 +231,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def name(self):
-        id_number=16843778
+        id_number = 16843778
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -333,7 +239,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def bios_revision(self):
-        id_number=16843781
+        id_number = 16843781
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -341,7 +247,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def firmware_name(self):
-        id_number=16843784
+        id_number = 16843784
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -349,7 +255,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def library_version(self):
-        id_number=16843266
+        id_number = 16843266
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -357,7 +263,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def driver_version(self):
-        id_number=16843265
+        id_number = 16843265
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -365,7 +271,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def firmware_version(self):
-        id_number=16843267
+        id_number = 16843267
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -373,7 +279,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def voltage_vcore(self):
-        id_number=16908801
+        id_number = 16908801
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -381,7 +287,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def voltage_3p3v(self):
-        id_number=16908804
+        id_number = 16908804
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -389,7 +295,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def voltage_5v(self):
-        id_number=16908805
+        id_number = 16908805
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -397,7 +303,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def voltage_12v(self):
-        id_number=16908806
+        id_number = 16908806
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -405,7 +311,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def voltage_5v_standby(self):
-        id_number=16908807
+        id_number = 16908807
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -413,7 +319,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def voltage_cmos_battery(self):
-        id_number=16908809
+        id_number = 16908809
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -421,15 +327,15 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def dc_power(self):
-        id_number=16908814
+        id_number = 16908814
         result = self.get_data_by_id(id_number)
         if not result:
             return None
         return result["v"]
-    
+
     @property
     def voltage_3v(self):
-        id_number=16908817
+        id_number = 16908817
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -437,7 +343,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def cpu_temperature(self):
-        id_number=16908545
+        id_number = 16908545
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -445,14 +351,14 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def system_temperature_in_celsius(self):
-        id_number=16908547
+        id_number = 16908547
         result = self.get_data_by_id(id_number)
         if not result:
             return None
         return result["v"]
 
     def get_gpio_direction(self, gpio_number=0):
-        id_number=16908547
+        id_number = 16908547
         result = self.get_data_by_id(id_number+gpio_number)
         if not result:
             return None
@@ -471,7 +377,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             return None
 
     def get_gpio_level(self, gpio_number=0):
-        id_number=17040129
+        id_number = 17040129
         result = self.get_data_by_id(id_number+gpio_number)
         if not result:
             return None
@@ -508,109 +414,99 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             return False
         return True
 
-    # @property
-    # def memory_count(self):
-    #     initial=337117185
-    #     count=0
-    #     for i in range(64):
-    #         if initial+i in self.device_id_list:
-    #             count+=1
-    #         else:
-    #             return count
-
     def get_memory_type(self, memory_number=0):
-        id_number=337117441
+        id_number = 337117441
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
         return result["v"]
 
     def get_module_type(self, memory_number=0):
-        id_number=337117697
+        id_number = 337117697
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
         return result["v"]
 
     def get_memory_size_in_GB(self, memory_number=0):
-        id_number=337117953
+        id_number = 337117953
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
         return result["v"]
 
     def get_memory_speed(self, memory_number=0):
-        id_number=337118209
+        id_number = 337118209
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
         return result["v"]
 
     def get_memory_rank(self, memory_number=0):
-        id_number=337118465
+        id_number = 337118465
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
         return result["v"]
 
     def get_memory_voltage(self, memory_number=0):
-        id_number=337118721
+        id_number = 337118721
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
         return result["v"]
 
     def get_memory_bank(self, memory_number=0):
-        id_number=337118977
+        id_number = 337118977
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
         return result["v"]
 
     def get_memory_manufacturing_date_code(self, memory_number=0):
-        id_number=337119233
+        id_number = 337119233
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
         return result["v"]
 
     def get_memory_temperature(self, memory_number=0):
-        id_number=337119489
+        id_number = 337119489
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
         return result["v"]
 
     def get_memory_write_protection(self, memory_number=0):
-        id_number=337119745
+        id_number = 337119745
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
         return result["v"]
 
     def get_memory_module_manufacture(self, memory_number=0):
-        id_number=337120001
+        id_number = 337120001
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
         return result["v"]
 
     def get_memory_manufacture(self, memory_number=0):
-        id_number=337120257
+        id_number = 337120257
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
         return result["v"]
 
     def get_memory_part_number(self, memory_number=0):
-        id_number=337121537
+        id_number = 337121537
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
         return result["v"]
 
     def get_memory_specific(self, memory_number=0):
-        id_number=337125633
+        id_number = 337125633
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
@@ -631,7 +527,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def free_disk_space(self):
-        id_number=353697793
+        id_number = 353697793
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -639,7 +535,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def cpu_fan_speed(self):
-        id_number=16909057
+        id_number = 16909057
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -647,7 +543,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def system_fan_speed(self):
-        id_number=16909058
+        id_number = 16909058
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -655,7 +551,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def susiiot_version(self):
-        id_number=257
+        id_number = 257
         result = self.get_data_by_id(id_number)
         if not result:
             return None
@@ -663,36 +559,14 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def voltage_sources(self) -> List[str]:
-        if self.voltage_source_list!=None:
-            return self.voltage_source_list
-        self.voltage_source_list=[]
-        initial=16908801
-        for i in range(20):
-            if initial+i in self.device_id_list:
-                name=self.get_data_by_id(initial+i)['n']
-                self.voltage_source_list.append(name)
-            else:
-                return self.voltage_source_list 
+        if self.voltage_source_list == None:
+            self.set_voltage_sources()
+        return self.voltage_source_list
 
     @property
     def temperature_sources(self) -> List[str]:
-        if self.temperature_source_list!=None:
-            return self.temperature_source_list
-        self.temperature_source_list=[]
-        # system temperature
-        initial=16908545
-        for i in range(20):
-            if initial+i in self.device_id_list:
-                name=self.get_data_by_id(initial+i)['n']
-                self.temperature_source_list.append(name)
-
-        # memory temperature
-        initial=337119489
-        for i in range(64):
-            if initial+i in self.device_id_list:
-                name=self.get_data_by_id(initial+i)['n']
-                self.temperature_source_list.append(name)
-        
+        if self.temperature_source_list == None:
+            self.set_temperature_sources()
         return self.temperature_source_list
 
     def get_voltage(self, voltage_source) -> float:
@@ -720,24 +594,17 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def pins(self) -> List[str]:
-        if self.gpio_list!=None:
-            return self.gpio_list
-        self.gpio_list=[]
-        initial=17039617
-        for i in range(64):
-            if initial+i in self.device_id_list:
-                name=self.get_data_by_id(initial+i)['bn']
-                self.gpio_list.append(name)
-            else:
-                return self.gpio_list 
+        if self.gpio_list == None:
+            self.set_gpio_list()
+        return self.gpio_list
 
     @property
     def gpio_count(self):
-        initial=17039617
-        count=0
+        initial = 17039617
+        count = 0
         for i in range(64):
             if initial+i in self.device_id_list:
-                count+=1
+                count += 1
             else:
                 return count
 
@@ -792,4 +659,3 @@ class JsonT(ctypes.Structure):
         ("type", ctypes.c_int),
         ("refcount", ctypes.c_size_t)
     ]
-
