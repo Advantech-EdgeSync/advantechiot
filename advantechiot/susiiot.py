@@ -608,7 +608,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             setting_value=1
         else:
             setting_value=0
-        self.set_value(gpio_target_initial+diff_number,setting_value)['bv'] 
+        self.set_value(gpio_target_initial+diff_number,setting_value)
 
     def get_level(self, pin: str) -> None:
         gpio_number_initial=17039617
