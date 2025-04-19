@@ -3,9 +3,11 @@ import unittest
 import advantechiot
 from enum import Enum
 
+
 class GpioDirectionType(Enum):
     INPUT = 0
     OUTPUT = 1
+
 
 class TestSDRAM(unittest.TestCase):
     def test_memory_count(self):
@@ -131,13 +133,12 @@ class TestHardwareMonitorVoltage(unittest.TestCase):
         print()
         for voltage_sources in device.motherboard.voltage_sources:
             print(voltage_sources)
+
     def test_voltage(self):
         device = advantechiot.Device()
         print()
         for voltage_sources in device.motherboard.voltage_sources:
-            print(voltage_sources,device.motherboard.get_voltage(voltage_sources))
-
-
+            print(voltage_sources, device.motherboard.get_voltage(voltage_sources))
 
 
 class TestHardwareMonitorTemperature(unittest.TestCase):
@@ -153,7 +154,6 @@ class TestHardwareMonitorTemperature(unittest.TestCase):
         for source in handler.motherboard.temperature_sources:
             print(
                 f"{source}: {handler.motherboard.get_temperature(source)} degrees Celsius")
-
 
 
 class TestHardwareMonitorFanSpeed(unittest.TestCase):
@@ -188,17 +188,17 @@ class TestGpio(unittest.TestCase):
 
     def test_set_gpio_direction(self):
         device = advantechiot.Device()
-        original_dir=0
-        updated_dir=0
+        original_dir = 0
+        updated_dir = 0
         print()
         for gpio_name in device.gpio.pins:
-            original_dir=device.gpio.get_direction(gpio_name)
+            original_dir = device.gpio.get_direction(gpio_name)
             print(f"{gpio_name} original is {original_dir}")
-            updated_dir=original_dir^1
-            device.gpio.set_direction(gpio_name,GpioDirectionType.INPUT)
-            updated_dir=device.gpio.get_direction(gpio_name)
+            updated_dir = original_dir ^ 1
+            device.gpio.set_direction(gpio_name, GpioDirectionType.INPUT)
+            updated_dir = device.gpio.get_direction(gpio_name)
             print(f"{gpio_name} updated is {updated_dir}")
-            device.gpio.set_direction(gpio_name,GpioDirectionType.OUTPUT)
+            device.gpio.set_direction(gpio_name, GpioDirectionType.OUTPUT)
 
     def test_get_gpio_level(self):
         device = advantechiot.Device()

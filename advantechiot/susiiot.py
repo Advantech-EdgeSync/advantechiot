@@ -20,7 +20,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         self.memory_sdram_table = None
         self.voltage_source_table = None
         self.temperature_source_table = None
-        self.fan_source_table=None
+        self.fan_source_table = None
 
         self.check_root_authorization()
         self.import_library()
@@ -175,9 +175,9 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         if self.voltage_source_table == None:
             self.set_voltage_sources()
         return self.voltage_source_table.keys()
-    
-    def get_voltage(self,voltage_source):
-        id_namuber=self.voltage_source_table[voltage_source]
+
+    def get_voltage(self, voltage_source):
+        id_namuber = self.voltage_source_table[voltage_source]
         return self.get_data_by_id(id_namuber)['v']
 
     def set_temperature_sources(self):
@@ -203,8 +203,6 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         if self.temperature_source_table == None:
             self.set_temperature_sources()
         return self.temperature_source_table.keys()
-
-    
 
     def import_library(self):
         architecture = platform.machine()
@@ -387,7 +385,6 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             return None
         return result["v"]
 
-
     def is_gpio_output(self, gpio_name):
         # todo
         try:
@@ -557,7 +554,6 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             return None
         return result["v"]
 
- 
     @property
     def susiiot_version(self):
         id_number = 257
@@ -565,8 +561,6 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         if not result:
             return None
         return result["sv"]
-
-
 
     def get_temperature(self, temperature_source) -> float:
         try:
@@ -592,29 +586,29 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         return self.fan_source_table
 
     def get_direction(self, pin: str) -> None:
-        gpio_number_initial=17039617
-        gpio_target_initial=17039873 # first gpio dir id
+        gpio_number_initial = 17039617
+        gpio_target_initial = 17039873  # first gpio dir id
         gpio_id_number = self.gpio_table[pin]
-        diff_number=gpio_id_number-gpio_number_initial
+        diff_number = gpio_id_number-gpio_number_initial
         return self.get_data_by_id(gpio_target_initial+diff_number)['bv']
 
     def set_direction(self, pin: str, direction: GpioDirectionType) -> None:
-        gpio_number_initial=17039617
-        gpio_target_initial=17039873 # first gpio level id
-        setting_value=0
+        gpio_number_initial = 17039617
+        gpio_target_initial = 17039873  # first gpio level id
+        setting_value = 0
         gpio_id_number = self.gpio_table[pin]
-        diff_number=gpio_id_number-gpio_number_initial
-        if direction.value==1:
-            setting_value=1
+        diff_number = gpio_id_number-gpio_number_initial
+        if direction.value == 1:
+            setting_value = 1
         else:
-            setting_value=0
-        self.set_value(gpio_target_initial+diff_number,setting_value)
+            setting_value = 0
+        self.set_value(gpio_target_initial+diff_number, setting_value)
 
     def get_level(self, pin: str) -> None:
-        gpio_number_initial=17039617
-        gpio_target_initial=17040129 # first gpio level id
+        gpio_number_initial = 17039617
+        gpio_target_initial = 17040129  # first gpio level id
         gpio_id_number = self.gpio_table[pin]
-        diff_number=gpio_id_number-gpio_number_initial
+        diff_number = gpio_id_number-gpio_number_initial
         return self.get_data_by_id(gpio_target_initial+diff_number)['bv']
 
     def set_level(self, pin: str, level: GpioLevelType) -> None:

@@ -35,4 +35,3 @@ class IMotherboard(ABC):
     @abstractmethod
     def fan_sources(self) -> List[str]:
         pass
-
