@@ -16,7 +16,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         self.json_library = None
         self.susi_information = None
         self.device_id_list=[]
-        # self.gpio_list = []
+        self.gpio_list = None
         # self.memory_list = []
         # self.voltage_source_list = []
         # self.temperature_source_list = []
@@ -510,7 +510,13 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def memory_count(self):
-        return len(self.memory_list)
+        initial=337117185
+        count=0
+        for i in range(64):
+            if initial+i in self.device_id_list:
+                count+=1
+            else:
+                return count
 
     def get_memory_type(self, memory_number=0):
         id_number=337117441
@@ -690,7 +696,26 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def pins(self) -> List[str]:
-        return self.gpio_list
+        if self.gpio_list!=None:
+            return self.gpio_list
+        self.gpio_list=[]
+        initial=17039617
+        for i in range(64):
+            if initial+i in self.device_id_list:
+                name=self.get_data_by_id(initial+i)['bn']
+                self.gpio_list.append(name)
+            else:
+                return self.gpio_list 
+
+    @property
+    def gpio_count(self):
+        initial=17039617
+        count=0
+        for i in range(64):
+            if initial+i in self.device_id_list:
+                count+=1
+            else:
+                return count
 
     def get_direction(self, pin: str) -> None:
         try:

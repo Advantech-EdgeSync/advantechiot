@@ -35,7 +35,7 @@ class IGpio(ABC):
     def set_level(self, pin: str, level: GpioLevelType) -> None:
         pass
 
-    @property
-    @abstractmethod
-    def pins(self) -> List[str]:
-        pass
+    # @property
+    # @abstractmethod
+    # def pins(self) -> List[str]:
+    #     pass
