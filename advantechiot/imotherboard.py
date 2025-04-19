@@ -33,9 +33,6 @@ class IMotherboard(ABC):
 
     @property
     @abstractmethod
-    def fan_source(self) -> List[str]:
+    def fan_sources(self) -> List[str]:
         pass
 
-    @abstractmethod
-    def get_fan_speed(self, fan_source) -> float:
-        pass

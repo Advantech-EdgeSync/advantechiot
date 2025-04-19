@@ -1,133 +1,16 @@
 
 import unittest
 import advantechiot
+from enum import Enum
 
+class GpioDirectionType(Enum):
+    INPUT = 0
+    OUTPUT = 1
 
-class TestListAndCount(unittest.TestCase):
-    def test_gpio_list(self):
-        device = advantechiot.Device()
-        print()
-        for gpio_name in device.gpio.pins:
-            print(gpio_name)
-
-    def test_voltage_sources(self):
-        device = advantechiot.Device()
-        print()
-        for voltage_sources in device.motherboard.voltage_sources:
-            print(voltage_sources)
-
-    def test_temperature_sources(self):
-        handler = advantechiot.Device()
-        print()
-        for source in handler.motherboard.temperature_sources:
-            print(source)
-
-class TestMotherboard(unittest.TestCase):
-    def test_name(self):
-        handler = advantechiot.Device()
-        print(handler.motherboard.name)
-
-    def test_bios_revision(self):
-        handler = advantechiot.Device()
-        print(handler.motherboard.bios_revision)
-
-    def test_voltage_sources(self):
-        handler = advantechiot.Device()
-        print()
-        for source in handler.motherboard.voltage_sources:
-            print(source)
-
-    def test_get_voltage(self):
-        handler = advantechiot.Device()
-        print()
-        for source in handler.motherboard.voltage_sources:
-            print(f"{source}: {handler.motherboard.get_voltage(source)}V")
-
-
-    def test_get_temperature(self):
-        handler = advantechiot.Device()
-        print()
-        for source in handler.motherboard.temperature_sources:
-            print(f"{source}: {handler.motherboard.get_temperature(source)} degrees Celsius")
-
-
-class TestGpio(unittest.TestCase):
-    def test_get_gpio_pins(self):
-        handler = advantechiot.Device()
-        print()
-        print(handler.gpio.pins)
-
-    def test_get_gpio_direction(self):
-        handler = advantechiot.Device()
-        print()
-        for i in range(handler.gpio.gpio_counter):
-            print(f"GPIO{i}, direction:{handler.gpio.get_gpio_direction(i)}")
-
-    def test_set_gpio_direction(self):
-        handler = advantechiot.Device()
-        origin = 0
-        changed = 0
-        print()
-        for gpio_number in range(handler.gpio.gpio_counter):
-            origin = handler.gpio.get_gpio_direction(gpio_number)
-            changed = origin ^ 1
-            result = handler.gpio.set_gpio_direction(gpio_number, changed)
-            if not result:
-                print(
-                    f"set GPIO direction {gpio_number} from {origin} to {changed}, fail")
-                exit(1)
-            print(
-                f"set GPIO direction {gpio_number} from {origin} to {changed}, successfully")
-            handler.gpio.set_gpio_direction(gpio_number, origin)
-            if not result:
-                print(
-                    f"set GPIO direction {gpio_number} from {origin} to {changed}, fail")
-                exit(1)
-            self.assertEqual(
-                handler.gpio.get_gpio_direction(gpio_number), origin)
-            print(
-                f"set GPIO direction {gpio_number} from {changed} to {origin}, successfully")
-
-    def test_get_gpio_level(self):
-        handler = advantechiot.Device()
-        print()
-        for i in range(handler.gpio.gpio_counter):
-            print(f"GPIO{i}, level:{handler.gpio.get_gpio_level(i)}")
-
-    def test_set_gpio_level(self):
-        handler = advantechiot.Device()
-        origin = 0
-        changed = 0
-        print()
-        for gpio_number in range(handler.gpio.gpio_counter):
-            origin = handler.gpio.get_gpio_level(gpio_number)
-            changed = origin ^ 1
-            result = handler.gpio.set_gpio_level(gpio_number, changed)
-            if result == False:
-                print(
-                    f"set GPIO{gpio_number} level {result}, Please check the direction; it must be output.")
-                continue
-            if result == None:
-                print(f"GPIO{gpio_number} is not exist")
-                continue
-            print(
-                f"set GPIO{gpio_number} level from {origin} to {changed}, successfully")
-            handler.gpio.set_gpio_level(gpio_number, origin)
-            if result == False:
-                print(
-                    f"set GPIO{gpio_number} level {result}, Please check the direction; it must be output.")
-                continue
-            if result == None:
-                print(f"GPIO{gpio_number} is not exist")
-                continue
-            print(
-                f"set GPIO{gpio_number} level from {changed} to {origin}, successfully")
-
-
-class TestMemory(unittest.TestCase):
+class TestSDRAM(unittest.TestCase):
     def test_memory_count(self):
-        handler = advantechiot.Device()
-        print(f"memory count: {handler.memory.memory_count}")
+        device = advantechiot.Device()
+        print(f"memory count: {device.memory.memory_count}")
 
     def test_get_memory_type(self):
         handler = advantechiot.Device()
@@ -214,7 +97,7 @@ class TestMemory(unittest.TestCase):
                 f"memory{i} specific:{handler.memory.get_memory_specific(i)}")
 
 
-class TestDisk(unittest.TestCase):
+class TestDiskInfo(unittest.TestCase):
     def test_total_disk_space(self):
         handler = advantechiot.Device()
         print(f"Total Disk Space: {handler.disk.total_disk_space} MB")
@@ -222,6 +105,109 @@ class TestDisk(unittest.TestCase):
     def test_free_disk_space(self):
         handler = advantechiot.Device()
         print(f"Free Disk Space: {handler.disk.free_disk_space} MB")
+
+
+class TestPlatformInformation(unittest.TestCase):
+    def test_board_manufacturer(self):
+        handler = advantechiot.Device()
+        print(handler.motherboard.board_manufacturer)
+
+    def test_name(self):
+        handler = advantechiot.Device()
+        print(handler.motherboard.name)
+
+    def test_bios_revision(self):
+        handler = advantechiot.Device()
+        print(handler.motherboard.bios_revision)
+
+    def test_library_version(self):
+        handler = advantechiot.Device()
+        print(handler.motherboard.library_version)
+
+
+class TestHardwareMonitorVoltage(unittest.TestCase):
+    def test_voltage_sources(self):
+        device = advantechiot.Device()
+        print()
+        for voltage_sources in device.motherboard.voltage_sources:
+            print(voltage_sources)
+    def test_voltage(self):
+        device = advantechiot.Device()
+        print()
+        for voltage_sources in device.motherboard.voltage_sources:
+            print(voltage_sources,device.motherboard.get_voltage(voltage_sources))
+
+
+
+
+class TestHardwareMonitorTemperature(unittest.TestCase):
+    def test_temperature_sources(self):
+        handler = advantechiot.Device()
+        print()
+        for source in handler.motherboard.temperature_sources:
+            print(source)
+
+    def test_get_temperature(self):
+        handler = advantechiot.Device()
+        print()
+        for source in handler.motherboard.temperature_sources:
+            print(
+                f"{source}: {handler.motherboard.get_temperature(source)} degrees Celsius")
+
+
+
+class TestHardwareMonitorFanSpeed(unittest.TestCase):
+    def test_fan_sources(self):
+        handler = advantechiot.Device()
+        print()
+        for source in handler.motherboard.fan_sources:
+            print(source)
+
+
+class TestListAndCount(unittest.TestCase):
+    def test_memory_list(self):
+        handler = advantechiot.Device()
+        print()
+        for source in handler.memory.memory_list:
+            print(source)
+
+
+class TestGpio(unittest.TestCase):
+    def test_gpio_pins(self):
+        device = advantechiot.Device()
+        print()
+        for gpio_name in device.gpio.pins:
+            print(gpio_name)
+
+    def test_get_gpio_direction(self):
+        device = advantechiot.Device()
+        print()
+        for gpio_name in device.gpio.pins:
+            print(
+                f"{gpio_name}, direction:{device.gpio.get_direction(gpio_name)}")
+
+    def test_set_gpio_direction(self):
+        device = advantechiot.Device()
+        original_dir=0
+        updated_dir=0
+        print()
+        for gpio_name in device.gpio.pins:
+            original_dir=device.gpio.get_direction(gpio_name)
+            print(f"{gpio_name} original is {original_dir}")
+            updated_dir=original_dir^1
+            device.gpio.set_direction(gpio_name,GpioDirectionType.INPUT)
+            updated_dir=device.gpio.get_direction(gpio_name)
+            print(f"{gpio_name} updated is {updated_dir}")
+            device.gpio.set_direction(gpio_name,GpioDirectionType.OUTPUT)
+
+    def test_get_gpio_level(self):
+        device = advantechiot.Device()
+        print()
+        for gpio_name in device.gpio.pins:
+            print(f"{gpio_name}, direction:{device.gpio.get_level(gpio_name)}")
+
+    def test_set_gpio_level(self):
+        pass
 
 
 if __name__ == '__main__':

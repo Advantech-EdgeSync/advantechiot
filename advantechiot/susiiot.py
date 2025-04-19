@@ -15,11 +15,12 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         self.susi_iot_library = None
         self.json_library = None
         self.susi_information = None
-        self.device_id_list = []
-        self.gpio_list = []
-        self.memory_list = []
-        self.voltage_source_list = []
-        self.temperature_source_list = []
+        self.device_id_list = None
+        self.gpio_table = None
+        self.memory_sdram_table = None
+        self.voltage_source_table = None
+        self.temperature_source_table = None
+        self.fan_source_table=None
 
         self.check_root_authorization()
         self.import_library()
@@ -42,93 +43,6 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             sys.exit("Error: Please run this program as root (use sudo).")
         else:
             return True
-
-    def extract_ids(self, obj, result=None):
-        if result is None:
-            result = []
-
-        if isinstance(obj, dict):
-            if "id" in obj:
-                result.append(obj["id"])
-            for value in obj.values():
-                self.extract_ids(value, result)
-
-        elif isinstance(obj, list):
-            for item in obj:
-                self.extract_ids(item, result)
-
-        return result
-
-    def set_device_id_list(self):
-        self.device_id_list = self.extract_ids(self.susi_information)
-
-    def set_gpio_list(self):
-        self.gpio_list = []
-        initial = 17039617
-        for i in range(64):
-            if initial+i in self.device_id_list:
-                name = self.get_data_by_id(initial+i)['bn']
-                self.gpio_list.append(name)
-        return self.gpio_list
-
-    def set_voltage_sources(self):
-        self.voltage_source_list = []
-        initial = 16908801
-        for i in range(20):
-            if initial+i in self.device_id_list:
-                name = self.get_data_by_id(initial+i)['n']
-                self.voltage_source_list.append(name)
-        return self.voltage_source_list
-
-    def set_temperature_sources(self):
-        self.temperature_source_list = []
-        # system temperature
-        initial = 16908545
-        for i in range(20):
-            if initial+i in self.device_id_list:
-                name = self.get_data_by_id(initial+i)['n']
-                self.temperature_source_list.append(name)
-
-        # memory temperature
-        initial = 337119489
-        for i in range(64):
-            if initial+i in self.device_id_list:
-                name = self.get_data_by_id(initial+i)['n']
-                self.temperature_source_list.append(name)
-
-        return self.temperature_source_list
-
-    def set_memory_list(self):
-        pass
-
-    def import_library(self):
-        architecture = platform.machine()
-        os_name = platform.system()
-        susi_iot_library_path = ""
-        json_library_path = ""
-
-        if os_name == "Linux" and 'x86' in architecture.lower():
-            susi_iot_library_path = "/usr/lib/libSusiIoT.so"
-            json_library_path = "/usr/lib/x86_64-linux-gnu/libjansson.so.4"
-
-        elif os_name == "Linux" and 'aarch64' in architecture.lower():
-            susi_iot_library_path = "/lib/libSusiIoT.so"
-            json_library_path = "/lib/aarch64-linux-gnu/libjansson.so.4"
-
-        elif os_name == "Windows" and 'x86' in architecture.lower():
-            pass
-
-        elif os_name == "Windows" and 'aarch64' in architecture.lower():
-            pass
-
-        else:
-            print(
-                f"disable to import library, architechture:{architecture.lower()}, os:{os_name}")
-
-        self.json_library = ctypes.CDLL(
-            json_library_path, mode=ctypes.RTLD_GLOBAL)
-        self.susi_iot_library = ctypes.CDLL(
-            susi_iot_library_path, mode=ctypes.RTLD_GLOBAL)
 
     def initialize_library(self):
         # SusiIoTStatus_t = ctypes.c_int
@@ -196,7 +110,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
     def set_susiiot_information(self, information):
         self.susi_information = information
 
-    def get_susi_information(self):
+    def get_susi_information_object(self):
         json_max_indent = 0x1F
         jsonObject = self.json_library.json_object()
         if self.susi_iot_library.SusiIoTGetPFCapability(jsonObject) != 0:
@@ -212,6 +126,122 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
     @property
     def susi_iot_information(self):
         return self.susi_information
+
+    def extract_ids(self, obj, result=None):
+        if result is None:
+            result = []
+
+        if isinstance(obj, dict):
+            if "id" in obj:
+                result.append(obj["id"])
+            for value in obj.values():
+                self.extract_ids(value, result)
+
+        elif isinstance(obj, list):
+            for item in obj:
+                self.extract_ids(item, result)
+
+        return result
+
+    def set_device_id_list(self):
+        self.device_id_list = self.extract_ids(self.susi_information)
+
+    def set_gpio_list(self):
+        self.gpio_table = {}
+        initial = 17039617
+        for i in range(64):
+            register = initial+i
+            if register in self.device_id_list:
+                name = self.get_data_by_id(register)['bn']
+                self.gpio_table.update({name: register})
+
+    @property
+    def pins(self) -> List[str]:
+        if self.gpio_table == None:
+            self.set_gpio_list()
+        return self.gpio_table.keys()
+
+    def set_voltage_sources(self):
+        self.voltage_source_table = {}
+        initial = 16908801
+        for i in range(64):
+            register = initial+i
+            if register in self.device_id_list:
+                name = self.get_data_by_id(register)['bn']
+                self.voltage_source_table.update({name: register})
+
+    @property
+    def voltage_sources(self) -> List[str]:
+        if self.voltage_source_table == None:
+            self.set_voltage_sources()
+        return self.voltage_source_table.keys()
+    
+    def get_voltage(self,voltage_source):
+        id_namuber=self.voltage_source_table[voltage_source]
+        return self.get_data_by_id(id_namuber)['v']
+
+    def set_temperature_sources(self):
+        self.temperature_source_table = {}
+        # system temperature
+        initial = 16908545
+        for i in range(20):
+            register = initial+i
+            if register in self.device_id_list:
+                name = self.get_data_by_id(register)['n']
+                self.temperature_source_table.update({name: register})
+
+        # memory temperature
+        initial = 337119489
+        for i in range(20):
+            register = initial+i
+            if register in self.device_id_list:
+                name = self.get_data_by_id(register)['n']
+                self.temperature_source_table.update({name: register})
+
+    @property
+    def temperature_sources(self) -> List[str]:
+        if self.temperature_source_table == None:
+            self.set_temperature_sources()
+        return self.temperature_source_table.keys()
+
+    
+
+    def import_library(self):
+        architecture = platform.machine()
+        os_name = platform.system()
+        susi_iot_library_path = ""
+        json_library_path = ""
+
+        if os_name == "Linux" and 'x86' in architecture.lower():
+            susi_iot_library_path = "/usr/lib/libSusiIoT.so"
+            json_library_path = "/usr/lib/x86_64-linux-gnu/libjansson.so.4"
+
+        elif os_name == "Linux" and 'aarch64' in architecture.lower():
+            susi_iot_library_path = "/lib/libSusiIoT.so"
+            json_library_path = "/lib/aarch64-linux-gnu/libjansson.so.4"
+
+        elif os_name == "Windows" and 'x86' in architecture.lower():
+            pass
+
+        elif os_name == "Windows" and 'aarch64' in architecture.lower():
+            pass
+
+        else:
+            print(
+                f"disable to import library, architechture:{architecture.lower()}, os:{os_name}")
+
+        self.json_library = ctypes.CDLL(
+            json_library_path, mode=ctypes.RTLD_GLOBAL)
+        self.susi_iot_library = ctypes.CDLL(
+            susi_iot_library_path, mode=ctypes.RTLD_GLOBAL)
+
+    @property
+    def board_manufacturer(self):
+        id_number = 16843777
+        result = self.get_data_by_id(id_number)
+        if not result:
+            return None
+        return result["sv"]
 
     @property
     def boot_up_times(self):
@@ -357,43 +387,18 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             return None
         return result["v"]
 
-    def get_gpio_direction(self, gpio_number=0):
-        id_number = 16908547
-        result = self.get_data_by_id(id_number+gpio_number)
-        if not result:
-            return None
-        return result["v"]
 
-    def set_gpio_direction(self, gpio_number=0, direction=0):
+    def is_gpio_output(self, gpio_name):
         # todo
         try:
-            gpio_string = self.gpio_list[gpio_number]
-            id_number = self.susi_information["GPIO"][gpio_string]["e"][0]["id"]
-            result = self.set_value(id_number, direction)
-            if result != 0:
-                return False
-            return True
-        except:
-            return None
-
-    def get_gpio_level(self, gpio_number=0):
-        id_number = 17040129
-        result = self.get_data_by_id(id_number+gpio_number)
-        if not result:
-            return None
-        return result["v"]
-
-    def is_gpio_output(self, gpio_number=0):
-        # todo
-        try:
-            gpio_string = self.gpio_list[gpio_number]
+            gpio_string = self.gpio_table[gpio_number]
             id_number = self.susi_information["GPIO"][gpio_string]["e"][0]["id"]
             if self.get_data_by_id(id_number)['bv'] == 0:
                 return True
         except:
             return False
 
-    def is_gpio_output_with_gpio_name(self, gpio_name=0):
+    def is_gpio_output_with_gpio_name(self, gpio_name):
         # todo
         try:
             id_number = self.susi_information["GPIO"][gpio_name]["e"][0]["id"]
@@ -402,19 +407,38 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         except:
             return False
 
-    def set_gpio_level(self, gpio_number=0, level=0):
+    def set_gpio_level(self, gpio_name, level=0):
         # todo
         gpio_direction_is_output = self.is_gpio_output(gpio_number)
         if not gpio_direction_is_output:
             return False
-        gpio_string = self.gpio_list[gpio_number]
+        gpio_string = self.gpio_table[gpio_number]
         id_number = self.susi_information["GPIO"][gpio_string]["e"][1]["id"]
         result = self.set_value(id_number, level)
         if result != 0:
             return False
         return True
 
-    def get_memory_type(self, memory_number=0):
+    def set_memory_list(self):
+        self.memory_sdram_table = {}
+        initial = 337117185
+        for i in range(64):
+            register = initial+i
+            if register in self.device_id_list:
+                name = self.get_data_by_id(register)['bn']
+                self.memory_sdram_table.update({name: register})
+
+    @property
+    def memory_list(self) -> List[str]:
+        if self.memory_sdram_table == None:
+            self.set_memory_list()
+        return self.memory_sdram_table.keys()
+
+    @property
+    def memory_count(self) -> List[str]:
+        return len(self.memory_sdram_table)
+
+    def get_memory_type(self, memory_name):
         id_number = 337117441
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
@@ -533,22 +557,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             return None
         return result["v"]
 
-    @property
-    def cpu_fan_speed(self):
-        id_number = 16909057
-        result = self.get_data_by_id(id_number)
-        if not result:
-            return None
-        return result["v"]
-
-    @property
-    def system_fan_speed(self):
-        id_number = 16909058
-        result = self.get_data_by_id(id_number)
-        if not result:
-            return None
-        return result["v"]
-
+ 
     @property
     def susiiot_version(self):
         id_number = 257
@@ -557,83 +566,59 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             return None
         return result["sv"]
 
-    @property
-    def voltage_sources(self) -> List[str]:
-        if self.voltage_source_list == None:
-            self.set_voltage_sources()
-        return self.voltage_source_list
 
-    @property
-    def temperature_sources(self) -> List[str]:
-        if self.temperature_source_list == None:
-            self.set_temperature_sources()
-        return self.temperature_source_list
-
-    def get_voltage(self, voltage_source) -> float:
-        try:
-            id_number = self.susi_id_name_table[voltage_source]
-            result = self.get_data_by_id(id_number)
-            return float(result["v"])
-        except:
-            pass
 
     def get_temperature(self, temperature_source) -> float:
         try:
-            id_number = self.susi_id_name_table[temperature_source]
+            id_number = self.temperature_source_table[temperature_source]
             result = self.get_data_by_id(id_number)
             return float(result["v"])
         except:
             pass
 
-    @property
-    def fan_source(self) -> List[str]:
-        pass
-
-    def get_fan_speed(self, fan_source) -> int:
-        pass
-
-    @property
-    def pins(self) -> List[str]:
-        if self.gpio_list == None:
-            self.set_gpio_list()
-        return self.gpio_list
-
-    @property
-    def gpio_count(self):
-        initial = 17039617
-        count = 0
+    def set_fan_source_table(self):
+        self.fan_source_table = {}
+        initial = 16909057
         for i in range(64):
-            if initial+i in self.device_id_list:
-                count += 1
-            else:
-                return count
+            register = initial+i
+            if register in self.device_id_list:
+                name = self.get_data_by_id(register)['n']
+                self.voltage_source_table.update({name: register})
+
+    @property
+    def fan_sources(self) -> List[str]:
+        if self.fan_source_table == None:
+            self.set_fan_source_table()
+        return self.fan_source_table
 
     def get_direction(self, pin: str) -> None:
-        try:
-            id_number = self.susi_information["GPIO"][pin]["e"][0]["id"]
-            return self.get_data_by_id(id_number)['bv']
-        except:
-            return None
+        gpio_number_initial=17039617
+        gpio_target_initial=17039873 # first gpio dir id
+        gpio_id_number = self.gpio_table[pin]
+        diff_number=gpio_id_number-gpio_number_initial
+        return self.get_data_by_id(gpio_target_initial+diff_number)['bv']
 
     def set_direction(self, pin: str, direction: GpioDirectionType) -> None:
-        try:
-            id_number = self.susi_information["GPIO"][pin]["e"][0]["id"]
-            result = self.set_value(id_number, direction)
-            if result != 0:
-                return False
-            return True
-        except:
-            return None
+        gpio_number_initial=17039617
+        gpio_target_initial=17039873 # first gpio level id
+        setting_value=0
+        gpio_id_number = self.gpio_table[pin]
+        diff_number=gpio_id_number-gpio_number_initial
+        if direction.value==1:
+            setting_value=1
+        else:
+            setting_value=0
+        self.set_value(gpio_target_initial+diff_number,setting_value)['bv'] 
 
     def get_level(self, pin: str) -> None:
-        try:
-            id_number = self.susi_information["GPIO"][pin]["e"][1]["id"]
-            return self.get_data_by_id(id_number)['bv']
-        except:
-            return None
+        gpio_number_initial=17039617
+        gpio_target_initial=17040129 # first gpio level id
+        gpio_id_number = self.gpio_table[pin]
+        diff_number=gpio_id_number-gpio_number_initial
+        return self.get_data_by_id(gpio_target_initial+diff_number)['bv']
 
     def set_level(self, pin: str, level: GpioLevelType) -> None:
-        gpio_direction_is_output = self.is_gpio_output_with_gpio_name(pin)
+        gpio_direction_is_output = self.gpio_table[pin]
         if not gpio_direction_is_output:
             return False
             id_number = self.susi_information["GPIO"][pin]["e"][1]["id"]
