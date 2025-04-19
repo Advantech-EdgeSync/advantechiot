@@ -7,13 +7,16 @@ import psutil
 import os
 import gc
 
+
 class GpioDirectionType(Enum):
     INPUT = 0
     OUTPUT = 1
 
+
 class GpioLevelType(Enum):
     LOW = 0
     HIGH = 1
+
 
 class TestSDRAM(unittest.TestCase):
     def test_memory_count(self):
@@ -215,14 +218,16 @@ class TestGpio(unittest.TestCase):
         device = advantechiot.Device()
         print()
         for gpio_name in device.gpio.pins:
-            device.gpio.set_direction(gpio_name, GpioDirectionType.INPUT) # must in input model
-            result=device.gpio.set_level(gpio_name, GpioLevelType.HIGH)
+            device.gpio.set_direction(
+                gpio_name, GpioDirectionType.INPUT)  # must in input model
+            result = device.gpio.set_level(gpio_name, GpioLevelType.HIGH)
             print(f"set {gpio_name} level result: {result}")
-            result=device.gpio.set_level(gpio_name, GpioLevelType.LOW)
+            result = device.gpio.set_level(gpio_name, GpioLevelType.LOW)
             print(f"set {gpio_name} level result: {result}")
 
 
 class TestSystem(unittest.TestCase):
+    @unittest.skip("infinity test, pass")
     def test_mutiple_susiiot_object_gc(self):
         process = psutil.Process(os.getpid())
         object_list = [advantechiot.Device() for _ in range(10)]
@@ -236,10 +241,12 @@ class TestSystem(unittest.TestCase):
             object_list.append(advantechiot.Device())
 
             mem = process.memory_info().rss / 1024 / 1024
-            print(f"Memory usage: {mem:.2f} MB | Remaining objects: {len(object_list)}")
+            print(
+                f"Memory usage: {mem:.2f} MB | Remaining objects: {len(object_list)}")
 
             time.sleep(0.01)
-    
+
+    @unittest.skip("infinity test, pass")
     def test_susiiot_object_release(self):
         process = psutil.Process(os.getpid())
 
@@ -254,8 +261,18 @@ class TestSystem(unittest.TestCase):
             gc.collect()                  # 主動觸發 GC（可選）
 
             mem = process.memory_info().rss / 1024 / 1024
-            print(f"Memory usage: {mem:.2f} MB | Remaining objects: {len(object_list)}")
+            print(
+                f"Memory usage: {mem:.2f} MB | Remaining objects: {len(object_list)}")
 
             time.sleep(1)
+
+    def test_susiiot_object_release(self):
+        for i in range(10):
+            device = advantechiot.Device()
+            time.sleep(1)
+            del device
+            print(f"run loop {i}")
+
+
 if __name__ == '__main__':
     unittest.main()

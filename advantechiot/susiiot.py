@@ -8,12 +8,30 @@ from .igpio import IGpio, GpioDirectionType, GpioLevelType
 from .imemory import IMemory
 from .idisk import IDisk
 from typing import List
+import threading
 
 
 class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
+    _instance = None
+    _lock = threading.Lock()
+
+    susi_iot_library = None  
+    json_library = None  #
+
+    def __new__(cls):
+        with cls._lock:
+            if cls._instance is None:
+                cls.susi_iot_library = None
+                cls.check_root_authorization()
+                cls.import_library()
+                cls.initialize_library()
+                cls.susi_iot_library.SusiIoTInitialize()
+                cls._instance = super().__new__(cls)
+            return cls._instance
+
     def __init__(self):
-        self.susi_iot_library = None
-        self.json_library = None
+        self.susi_iot_library = SusiIot.susi_iot_library
+        self.json_library = SusiIot.json_library
         self.susi_information = None
         self.device_id_list = None
         self.gpio_table = None
@@ -22,10 +40,6 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         self.temperature_source_table = None
         self.fan_source_table = None
 
-        self.check_root_authorization()
-        self.import_library()
-        self.initialize_library()
-        self.susi_iot_library.SusiIoTInitialize()
         susiiot_information = self.get_susi_information_string()
         self.set_susiiot_information(susiiot_information)
         self.set_device_id_list()
@@ -35,45 +49,46 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         self.set_temperature_sources()
 
     def __del__(self):
-        pass
-        # self.susi_iot_library.SusiIoTUninitialize()
+        self.susi_iot_library.SusiIoTUninitialize()
 
-    def check_root_authorization(self):
+    @staticmethod
+    def check_root_authorization():
         if os.geteuid() != 0:
             sys.exit("Error: Please run this program as root (use sudo).")
         else:
             return True
 
-    def initialize_library(self):
+    @staticmethod
+    def initialize_library():
 
-        self.susi_iot_library.SusiIoTInitialize.restype = ctypes.c_int
+        SusiIot.susi_iot_library.SusiIoTInitialize.restype = ctypes.c_int
 
-        self.susi_iot_library.SusiIoTSetValue.argtypes = [
+        SusiIot.susi_iot_library.SusiIoTSetValue.argtypes = [
             ctypes.c_uint32, ctypes.POINTER(JsonT)]
-        self.susi_iot_library.SusiIoTSetValue.restype = ctypes.c_uint32
+        SusiIot.susi_iot_library.SusiIoTSetValue.restype = ctypes.c_uint32
 
-        self.susi_iot_library.SusiIoTGetLoggerPath.restype = ctypes.c_char_p
+        SusiIot.susi_iot_library.SusiIoTGetLoggerPath.restype = ctypes.c_char_p
 
-        self.susi_iot_library.SusiIoTGetPFDataString.restype = ctypes.c_char_p
-        self.susi_iot_library.SusiIoTGetPFDataString.argtypes = [
+        SusiIot.susi_iot_library.SusiIoTGetPFDataString.restype = ctypes.c_char_p
+        SusiIot.susi_iot_library.SusiIoTGetPFDataString.argtypes = [
             ctypes.c_uint32]
 
-        self.susi_iot_library.SusiIoTGetPFDataStringByUri.restype = ctypes.c_char_p
-        self.susi_iot_library.SusiIoTGetPFDataStringByUri.argtypes = [
+        SusiIot.susi_iot_library.SusiIoTGetPFDataStringByUri.restype = ctypes.c_char_p
+        SusiIot.susi_iot_library.SusiIoTGetPFDataStringByUri.argtypes = [
             ctypes.c_char_p]
 
-        self.json_library.json_dumps.restype = ctypes.c_char_p
-        self.json_library.json_integer.restype = ctypes.POINTER(JsonT)
+        SusiIot.json_library.json_dumps.restype = ctypes.c_char_p
+        SusiIot.json_library.json_integer.restype = ctypes.POINTER(JsonT)
 
-        self.json_library.json_real.restype = ctypes.POINTER(JsonT)
-        self.json_library.json_string.restype = ctypes.POINTER(JsonT)
+        SusiIot.json_library.json_real.restype = ctypes.POINTER(JsonT)
+        SusiIot.json_library.json_string.restype = ctypes.POINTER(JsonT)
         prototype = ctypes.CFUNCTYPE(
             ctypes.c_char_p
         )
-        self.SusiIoTGetPFCapabilityString = prototype(
-            ("SusiIoTGetPFCapabilityString", self.susi_iot_library))
+        SusiIot.SusiIoTGetPFCapabilityString = prototype(
+            ("SusiIoTGetPFCapabilityString", SusiIot.susi_iot_library))
 
-        self.susi_iot_library.SusiIoTUninitialize.restype = ctypes.c_int
+        SusiIot.susi_iot_library.SusiIoTUninitialize.restype = ctypes.c_int
 
     def get_json_indent(self, n):
         json_max_indent = 0x1F
@@ -202,7 +217,8 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             self.set_temperature_sources()
         return self.temperature_source_table.keys()
 
-    def import_library(self):
+    @staticmethod
+    def import_library():
         architecture = platform.machine()
         os_name = platform.system()
         susi_iot_library_path = ""
@@ -226,9 +242,9 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             print(
                 f"disable to import library, architechture:{architecture.lower()}, os:{os_name}")
 
-        self.json_library = ctypes.CDLL(
+        SusiIot.json_library = ctypes.CDLL(
             json_library_path, mode=ctypes.RTLD_GLOBAL)
-        self.susi_iot_library = ctypes.CDLL(
+        SusiIot.susi_iot_library = ctypes.CDLL(
             susi_iot_library_path, mode=ctypes.RTLD_GLOBAL)
 
     @property
@@ -382,10 +398,6 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         if not result:
             return None
         return result["v"]
-
-    
-
-    
 
     def set_memory_list(self):
         self.memory_sdram_table = {}
