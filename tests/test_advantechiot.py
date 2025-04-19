@@ -6,8 +6,7 @@ import advantechiot
 class TestListAndCount(unittest.TestCase):
     def test_gpio_count(self):
         device = advantechiot.Device()
-        print(f"gpio count: {device.gpio.gpio_count}")
-
+        print(f"gpio count: {len(device.gpio.pins)}")
 
     def test_gpio_list(self):
         device = advantechiot.Device()
@@ -15,9 +14,21 @@ class TestListAndCount(unittest.TestCase):
         for gpio_name in device.gpio.pins:
             print(gpio_name)
 
+    def test_voltage_sources(self):
+        device = advantechiot.Device()
+        print()
+        for voltage_sources in device.motherboard.voltage_sources:
+            print(voltage_sources)
+
     def test_memory_count(self):
         device = advantechiot.Device()
         print(f"memory count: {device.memory.memory_count}")
+        
+    def test_temperature_sources(self):
+        handler = advantechiot.Device()
+        print()
+        for source in handler.motherboard.temperature_sources:
+            print(source)
 
 class TestMotherboard(unittest.TestCase):
     def test_name(self):
@@ -40,11 +51,6 @@ class TestMotherboard(unittest.TestCase):
         for source in handler.motherboard.voltage_sources:
             print(f"{source}: {handler.motherboard.get_voltage(source)}V")
 
-    def test_temperature_sources(self):
-        handler = advantechiot.Device()
-        print()
-        for source in handler.motherboard.temperature_sources:
-            print(source)
 
     def test_get_temperature(self):
         handler = advantechiot.Device()

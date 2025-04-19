@@ -18,8 +18,8 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         self.device_id_list=[]
         self.gpio_list = None
         # self.memory_list = []
-        # self.voltage_source_list = []
-        # self.temperature_source_list = []
+        self.voltage_source_list = None
+        self.temperature_source_list = None
         # self.susi_id_name_table = {}
         # self.susi_name_id_table = {}
 
@@ -508,15 +508,15 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             return False
         return True
 
-    @property
-    def memory_count(self):
-        initial=337117185
-        count=0
-        for i in range(64):
-            if initial+i in self.device_id_list:
-                count+=1
-            else:
-                return count
+    # @property
+    # def memory_count(self):
+    #     initial=337117185
+    #     count=0
+    #     for i in range(64):
+    #         if initial+i in self.device_id_list:
+    #             count+=1
+    #         else:
+    #             return count
 
     def get_memory_type(self, memory_number=0):
         id_number=337117441
@@ -663,12 +663,36 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def voltage_sources(self) -> List[str]:
-        #todo
-        return self.voltage_source_list
+        if self.voltage_source_list!=None:
+            return self.voltage_source_list
+        self.voltage_source_list=[]
+        initial=16908801
+        for i in range(20):
+            if initial+i in self.device_id_list:
+                name=self.get_data_by_id(initial+i)['n']
+                self.voltage_source_list.append(name)
+            else:
+                return self.voltage_source_list 
 
     @property
     def temperature_sources(self) -> List[str]:
-        #todo
+        if self.temperature_source_list!=None:
+            return self.temperature_source_list
+        self.temperature_source_list=[]
+        # system temperature
+        initial=16908545
+        for i in range(20):
+            if initial+i in self.device_id_list:
+                name=self.get_data_by_id(initial+i)['n']
+                self.temperature_source_list.append(name)
+
+        # memory temperature
+        initial=337119489
+        for i in range(64):
+            if initial+i in self.device_id_list:
+                name=self.get_data_by_id(initial+i)['n']
+                self.temperature_source_list.append(name)
+        
         return self.temperature_source_list
 
     def get_voltage(self, voltage_source) -> float:
