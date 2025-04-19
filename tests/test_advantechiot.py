@@ -2,12 +2,18 @@
 import unittest
 import advantechiot
 from enum import Enum
-
+import time
+import psutil
+import os
+import gc
 
 class GpioDirectionType(Enum):
     INPUT = 0
     OUTPUT = 1
 
+class GpioLevelType(Enum):
+    LOW = 0
+    HIGH = 1
 
 class TestSDRAM(unittest.TestCase):
     def test_memory_count(self):
@@ -192,13 +198,12 @@ class TestGpio(unittest.TestCase):
         updated_dir = 0
         print()
         for gpio_name in device.gpio.pins:
-            original_dir = device.gpio.get_direction(gpio_name)
-            print(f"{gpio_name} original is {original_dir}")
-            updated_dir = original_dir ^ 1
             device.gpio.set_direction(gpio_name, GpioDirectionType.INPUT)
-            updated_dir = device.gpio.get_direction(gpio_name)
-            print(f"{gpio_name} updated is {updated_dir}")
+            print(
+                f"{gpio_name}, direction:{device.gpio.get_direction(gpio_name)}")
             device.gpio.set_direction(gpio_name, GpioDirectionType.OUTPUT)
+            print(
+                f"{gpio_name}, direction:{device.gpio.get_direction(gpio_name)}")
 
     def test_get_gpio_level(self):
         device = advantechiot.Device()
@@ -207,8 +212,50 @@ class TestGpio(unittest.TestCase):
             print(f"{gpio_name}, direction:{device.gpio.get_level(gpio_name)}")
 
     def test_set_gpio_level(self):
-        pass
+        device = advantechiot.Device()
+        print()
+        for gpio_name in device.gpio.pins:
+            device.gpio.set_direction(gpio_name, GpioDirectionType.INPUT) # must in input model
+            result=device.gpio.set_level(gpio_name, GpioLevelType.HIGH)
+            print(f"set {gpio_name} level result: {result}")
+            result=device.gpio.set_level(gpio_name, GpioLevelType.LOW)
+            print(f"set {gpio_name} level result: {result}")
 
 
+class TestSystem(unittest.TestCase):
+    def test_mutiple_susiiot_object_gc(self):
+        process = psutil.Process(os.getpid())
+        object_list = [advantechiot.Device() for _ in range(10)]
+
+        while object_list:
+            for i in range(len(object_list)):
+                object_list[i].motherboard.get_temperature("CPU-therm")
+            removed = object_list.pop(0)  # 移除最舊的物件
+            del removed                   # 確保沒有引用
+            gc.collect()                  # 主動觸發 GC（可選）
+            object_list.append(advantechiot.Device())
+
+            mem = process.memory_info().rss / 1024 / 1024
+            print(f"Memory usage: {mem:.2f} MB | Remaining objects: {len(object_list)}")
+
+            time.sleep(0.01)
+    
+    def test_susiiot_object_release(self):
+        process = psutil.Process(os.getpid())
+
+        # 初始化放入 10 個物件
+        object_list = [advantechiot.Device() for _ in range(10)]
+
+        while object_list:
+            for i in range(len(object_list)):
+                print(object_list[i].disk.total_disk_space)
+            removed = object_list.pop(0)  # 移除最舊的物件
+            del removed                   # 確保沒有引用
+            gc.collect()                  # 主動觸發 GC（可選）
+
+            mem = process.memory_info().rss / 1024 / 1024
+            print(f"Memory usage: {mem:.2f} MB | Remaining objects: {len(object_list)}")
+
+            time.sleep(1)
 if __name__ == '__main__':
     unittest.main()

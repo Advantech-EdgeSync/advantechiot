@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name="advantechiot",
-    version="0.1.72",
+    version="0.1.74",
     author='Keng Wei Li',
     author_email='Kengwei.Li@advantech.com.tw',
     packages=["advantechiot"],

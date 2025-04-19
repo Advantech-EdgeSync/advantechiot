@@ -45,8 +45,6 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             return True
 
     def initialize_library(self):
-        # SusiIoTStatus_t = ctypes.c_int
-        # SusiIoTId_t = ctypes.c_int
 
         self.susi_iot_library.SusiIoTInitialize.restype = ctypes.c_int
 
@@ -385,36 +383,9 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
             return None
         return result["v"]
 
-    def is_gpio_output(self, gpio_name):
-        # todo
-        try:
-            gpio_string = self.gpio_table[gpio_number]
-            id_number = self.susi_information["GPIO"][gpio_string]["e"][0]["id"]
-            if self.get_data_by_id(id_number)['bv'] == 0:
-                return True
-        except:
-            return False
+    
 
-    def is_gpio_output_with_gpio_name(self, gpio_name):
-        # todo
-        try:
-            id_number = self.susi_information["GPIO"][gpio_name]["e"][0]["id"]
-            if self.get_data_by_id(id_number)['bv'] == 0:
-                return True
-        except:
-            return False
-
-    def set_gpio_level(self, gpio_name, level=0):
-        # todo
-        gpio_direction_is_output = self.is_gpio_output(gpio_number)
-        if not gpio_direction_is_output:
-            return False
-        gpio_string = self.gpio_table[gpio_number]
-        id_number = self.susi_information["GPIO"][gpio_string]["e"][1]["id"]
-        result = self.set_value(id_number, level)
-        if result != 0:
-            return False
-        return True
+    
 
     def set_memory_list(self):
         self.memory_sdram_table = {}
@@ -536,15 +507,12 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
     @property
     def total_disk_space(self):
         # todo, there are 2 item with the same id 353697792
-        try:
-            id_number = 353697792
-            result = self.get_data_by_id(id_number)
-            result = result['e'][0]
-            if not result:
-                print(f"{id_number} result is {result}")
-            return result["v"]
-        except:
-            return None
+        id_number = 353697792
+        result = self.get_data_by_id(id_number)
+        result = result['e'][0]
+        if not result:
+            print(f"{id_number} result is {result}")
+        return result["v"]
 
     @property
     def free_disk_space(self):
@@ -595,14 +563,9 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
     def set_direction(self, pin: str, direction: GpioDirectionType) -> None:
         gpio_number_initial = 17039617
         gpio_target_initial = 17039873  # first gpio level id
-        setting_value = 0
         gpio_id_number = self.gpio_table[pin]
         diff_number = gpio_id_number-gpio_number_initial
-        if direction.value == 1:
-            setting_value = 1
-        else:
-            setting_value = 0
-        self.set_value(gpio_target_initial+diff_number, setting_value)
+        self.set_value(gpio_target_initial+diff_number, direction.value)
 
     def get_level(self, pin: str) -> None:
         gpio_number_initial = 17039617
@@ -612,7 +575,21 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         return self.get_data_by_id(gpio_target_initial+diff_number)['bv']
 
     def set_level(self, pin: str, level: GpioLevelType) -> None:
-        pass
+        gpio_number_initial = 17039617
+        gpio_target_initial = 17039873  # first gpio dir id
+        gpio_id_number = self.gpio_table[pin]
+        diff_number = gpio_id_number-gpio_number_initial
+        dir_value = self.get_data_by_id(gpio_target_initial+diff_number)['bv']
+        if dir_value == 1:
+            return "error: set gpio level must in output, the direction is input now"
+
+        gpio_target_initial = 17040129  # first gpio level id
+        self.set_value(gpio_target_initial+diff_number, level.value)
+        dir_value = self.get_data_by_id(gpio_target_initial+diff_number)['bv']
+        if dir_value == level.value:
+            return True
+        else:
+            return False
 
 
 class JsonType:
