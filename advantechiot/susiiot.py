@@ -241,11 +241,13 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         else:
             print(
                 f"disable to import library, architechture:{architecture.lower()}, os:{os_name}")
-
-        SusiIot.json_library = ctypes.CDLL(
-            json_library_path, mode=ctypes.RTLD_GLOBAL)
-        SusiIot.susi_iot_library = ctypes.CDLL(
-            susi_iot_library_path, mode=ctypes.RTLD_GLOBAL)
+        try:
+            SusiIot.json_library = ctypes.CDLL(
+                json_library_path, mode=ctypes.RTLD_GLOBAL)
+            SusiIot.susi_iot_library = ctypes.CDLL(
+                susi_iot_library_path, mode=ctypes.RTLD_GLOBAL)
+        except Exception as e:
+            print("SUSI Iot is not installed, please install proper Advantech Library. ",e)
 
     @property
     def board_manufacturer(self):

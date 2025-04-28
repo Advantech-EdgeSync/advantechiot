@@ -34,48 +34,69 @@ SUSI IoT is an IoT-oriented library aiming at simplifying the complicated IoT in
 SUSI AI is used to get and set information of AI accelerated devices, such as NVIDIA x86 GPU card, NVIDIA ARM platform, and Intel x86 CPU / GPU; meanwhile, information of docker image and container could be retrieved as well.
 
 # SUSI Iot with Python
-
-## Install SUSI IOT
-https://github.com/ADVANTECH-Corp/SUSI
-
-* ReleasePackage
-* Choice ARM or x86 Architecture
-* Choice Board Type
-* Un-Zip and Run Installation
-
-## Build Docker Image
-```sh
-docker build -t susiiot_ubuntu:1.0.1 .
-```
-## Run Docker Container
-In the Linux Container
-```sh
+## On x86 Ubuntu
+```bash
 sudo docker run \
     -it \
-    --name susi_iot_demo \
+    --name kengweisusiiotdemo \
     --privileged \
-    -v /sys/firmware/efi/efivars/:/sys/firmware/efi/efivars/ \
-    -v /etc/board/:/etc/board/ \
+    --mount type=bind,source=/opt/Advantech/susi/service/,target=/opt/Advantech/susi/service/,readonly \
+    --mount type=bind,source=/etc/Advantech/susi/service/,target=/etc/Advantech/susi/service/,readonly \
+    --mount type=bind,source=/usr/lib/x86_64-linux-gnu/libjansson.so.4,target=/usr/lib/x86_64-linux-gnu/libjansson.so.4,readonly \
+    --mount type=bind,source=/usr/lib/libjansson.so.4,target=/usr/lib/libjansson.so.4,readonly \
+    --mount type=bind,source=/usr/lib/libjansson.so,target=/usr/lib/libjansson.so,readonly \
+    --mount type=bind,source=/usr/lib/libSusiIoT.so,target=/usr/lib/libSusiIoT.so,readonly \
+    --mount type=bind,source=/usr/lib/libSUSIDevice.so.1,target=/usr/lib/libSUSIDevice.so.1,readonly \
+    --mount type=bind,source=/usr/lib/libSUSIDevice.so,target=/usr/lib/libSUSIDevice.so,readonly \
+    --mount type=bind,source=/usr/lib/libSUSIAI.so.1,target=/usr/lib/libSUSIAI.so.1,readonly \
+    --mount type=bind,source=/usr/lib/libSUSIAI.so,target=/usr/lib/libSUSIAI.so,readonly \
+    --mount type=bind,source=/usr/lib/libSUSI-4.00.so.1,target=/usr/lib/libSUSI-4.00.so.1,readonly \
+    --mount type=bind,source=/usr/lib/libSUSI-4.00.so,target=/usr/lib/libSUSI-4.00.so,readonly \
+    --mount type=bind,source=/usr/lib/libSUSI-3.02.so.1,target=/usr/lib/libSUSI-3.02.so.1,readonly \
+    --mount type=bind,source=/usr/lib/libSUSI-3.02.so,target=/usr/lib/libSUSI-3.02.so,readonly \
+    --mount type=bind,source=/usr/lib/libEApi.so.1,target=/usr/lib/libEApi.so.1,readonly \
+    --mount type=bind,source=/usr/lib/libEApi.so,target=/usr/lib/libEApi.so,readonly \
+    --mount type=bind,source=/usr/lib/Advantech,target=/usr/lib/Advantech,readonly \
     -v /home/:/volume \
-    susiiot_ubuntu:1.0.1 \
-    /bin/bash
+    susiiot_x86:1 \
+    bash
 ```
-In the Yocto Container
-```sh
+## On ARM Ubuntu
+```bash
 sudo docker run \
-    -it \
-    --name susi_iot_demo \
-    --privileged \
-    -v /etc/board/:/etc/board/ \
-    -v /home/:/volume \
-    susiiot_ubuntu:1.0.1 \
-    /bin/bash
+        -it \
+        --name susiiot_demo \
+        --privileged \
+        --mount type=bind,source=/lib/libSUSI-4.00.so,target=/lib/libSUSI-4.00.so,readonly \
+        --mount type=bind,source=/lib/libSUSI-4.00.so.1,target=/lib/libSUSI-4.00.so.1,readonly \
+        --mount type=bind,source=/lib/libSUSI-4.00.so.1.0.0,target=/lib/libSUSI-4.00.so.1.0.0,readonly \
+        --mount type=bind,source=/lib/libjansson.a,target=/lib/libjansson.a,readonly \
+        --mount type=bind,source=/lib/libjansson.so,target=/lib/libjansson.so,readonly \
+        --mount type=bind,source=/lib/libjansson.so.4,target=/lib/libjansson.so.4,readonly \
+        --mount type=bind,source=/lib/libjansson.so.4.11.0,target=/lib/libjansson.so.4.11.0,readonly \
+        --mount type=bind,source=/lib/libSusiIoT.so,target=/lib/libSusiIoT.so,readonly \
+        --mount type=bind,source=/lib/libSusiIoT.so.1.0.0,target=/lib/libSusiIoT.so.1.0.0,readonly \
+        --mount type=bind,source=/usr/lib/Advantech/,target=/usr/lib/Advantech/,readonly \
+        -v /home/:/volume \
+        ubuntu:20.04 \
+        /bin/bash
 ```
+
 ## PIP Install advantechiot Package
 ```sh
-pip install git+https://github.com/EdgeSync-Adv/advantechiot.git
+sudo pip3 install git+https://github.com/EdgeSync-Adv/advantechiot.git
 ```
-## Demo Example
+
+## Get Demo Code
 ```sh
-tests\test_advantechiot.py
+git clone https://github.com/EdgeSync-Adv/advantechiot.git
+cd advantechiot/tests
+```
+### In the Container
+```sh
+python3 -m unittest -v test_advantechiot
+```
+### In the Host
+```sh
+sudo python3 -m unittest -v test_advantechiot
 ```

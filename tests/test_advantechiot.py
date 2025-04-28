@@ -2,10 +2,6 @@
 import unittest
 import advantechiot
 from enum import Enum
-import time
-import psutil
-import os
-import gc
 
 
 class GpioDirectionType(Enum):
@@ -225,53 +221,6 @@ class TestGpio(unittest.TestCase):
             result = device.gpio.set_level(gpio_name, GpioLevelType.LOW)
             print(f"set {gpio_name} level result: {result}")
 
-
-class TestSystem(unittest.TestCase):
-    @unittest.skip("infinity test, pass")
-    def test_mutiple_susiiot_object_gc(self):
-        process = psutil.Process(os.getpid())
-        object_list = [advantechiot.Device() for _ in range(10)]
-
-        while object_list:
-            for i in range(len(object_list)):
-                object_list[i].motherboard.get_temperature("CPU-therm")
-            removed = object_list.pop(0)  # 移除最舊的物件
-            del removed                   # 確保沒有引用
-            gc.collect()                  # 主動觸發 GC（可選）
-            object_list.append(advantechiot.Device())
-
-            mem = process.memory_info().rss / 1024 / 1024
-            print(
-                f"Memory usage: {mem:.2f} MB | Remaining objects: {len(object_list)}")
-
-            time.sleep(0.01)
-
-    @unittest.skip("infinity test, pass")
-    def test_susiiot_object_release(self):
-        process = psutil.Process(os.getpid())
-
-        # 初始化放入 10 個物件
-        object_list = [advantechiot.Device() for _ in range(10)]
-
-        while object_list:
-            for i in range(len(object_list)):
-                print(object_list[i].disk.total_disk_space)
-            removed = object_list.pop(0)  # 移除最舊的物件
-            del removed                   # 確保沒有引用
-            gc.collect()                  # 主動觸發 GC（可選）
-
-            mem = process.memory_info().rss / 1024 / 1024
-            print(
-                f"Memory usage: {mem:.2f} MB | Remaining objects: {len(object_list)}")
-
-            time.sleep(1)
-
-    def test_susiiot_object_release(self):
-        for i in range(10):
-            device = advantechiot.Device()
-            time.sleep(1)
-            del device
-            print(f"run loop {i}")
 
 
 if __name__ == '__main__':
