@@ -34,6 +34,15 @@ SUSI IoT is an IoT-oriented library aiming at simplifying the complicated IoT in
 SUSI AI is used to get and set information of AI accelerated devices, such as NVIDIA x86 GPU card, NVIDIA ARM platform, and Intel x86 CPU / GPU; meanwhile, information of docker image and container could be retrieved as well.
 
 # SUSI Iot with Python
+
+## Install SUSI IOT
+https://github.com/ADVANTECH-Corp/SUSI
+
+* ReleasePackage
+* Choice ARM or x86 Architecture
+* Choice Board Type
+* Un-Zip and Run Installation
+
 ## On x86 Ubuntu
 ```bash
 sudo docker run \
@@ -61,6 +70,7 @@ sudo docker run \
     susiiot_x86:1 \
     bash
 ```
+
 ## On ARM Ubuntu
 ```bash
 sudo docker run \
@@ -86,7 +96,6 @@ sudo docker run \
 ```sh
 sudo pip3 install git+https://github.com/EdgeSync-Adv/advantechiot.git
 ```
-
 ## Get Demo Code
 ```sh
 git clone https://github.com/EdgeSync-Adv/advantechiot.git
