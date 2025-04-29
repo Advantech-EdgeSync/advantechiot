@@ -180,7 +180,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         for i in range(64):
             register = initial+i
             if register in self.device_id_list:
-                name = self.get_data_by_id(register)['bn']
+                name = self.get_data_by_id(register)['n']
                 self.voltage_source_table.update({name: register})
 
     @property
