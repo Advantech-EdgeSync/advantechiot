@@ -530,6 +530,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def total_disk_space(self):
+        # susi iot bug, there are two item with same id=353697792
         id_number = 353697792
         result = self.get_data_by_id(id_number)
         if not result:
