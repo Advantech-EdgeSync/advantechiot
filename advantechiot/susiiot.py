@@ -488,7 +488,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
-        return result["v"]
+        return result["sv"]
 
     def get_memory_module_manufacture(self, memory_number=0):
         id_number = 337120001
@@ -502,7 +502,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
-        return result["v"]
+        return result["sv"]
 
     def get_memory_part_number(self, memory_number=0):
         id_number = 337121537
