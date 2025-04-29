@@ -44,6 +44,25 @@ https://github.com/ADVANTECH-Corp/SUSI
 * Un-Zip and Run Installation
 
 ## On x86 Ubuntu
+* Docker File
+```dockerfile
+FROM ubuntu:20.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt update && apt install -y pciutils && apt clean
+
+RUN mkdir -p /opt/Advantech/susi/service/ && \
+    mkdir -p /usr/lib/x86_64-linux-gnu && \
+    mkdir -p /usr/lib/Advantech
+
+CMD ["/bin/bash"]
+```
+* Docker Build
+```bash
+docker build -t susiiot_x86:1 .
+```
+* Docker Run
 ```bash
 sudo docker run \
     -it \
@@ -72,6 +91,8 @@ sudo docker run \
 ```
 
 ## On ARM Ubuntu
+* No need to extra build image. 
+* Docker Run
 ```bash
 sudo docker run \
         -it \
