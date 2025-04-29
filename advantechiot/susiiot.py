@@ -530,14 +530,13 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
 
     @property
     def total_disk_space(self):
-        # todo, there are 2 item with the same id 353697792
         id_number = 353697792
         result = self.get_data_by_id(id_number)
         if not result:
             return None
-        result = result['e'][0]
-        if not result:
-            print(f"{id_number} result is {result}")
+        if type(result)==type(dict()):
+            result = result['e'][0]
+            return result["v"]
         return result["v"]
 
     @property
