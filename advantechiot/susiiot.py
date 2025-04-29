@@ -420,19 +420,19 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
     def memory_count(self) -> List[str]:
         return len(self.memory_sdram_table)
 
-    def get_memory_type(self, memory_name):
+    def get_memory_type(self, memory_number=0):
         id_number = 337117441
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
-        return result["v"]
+        return result["sv"]
 
     def get_module_type(self, memory_number=0):
         id_number = 337117697
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
-        return result["v"]
+        return result["sv"]
 
     def get_memory_size_in_GB(self, memory_number=0):
         id_number = 337117953
@@ -446,7 +446,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
-        return result["v"]
+        return result["sv"]
 
     def get_memory_rank(self, memory_number=0):
         id_number = 337118465
@@ -467,14 +467,14 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
-        return result["v"]
+        return result["sv"]
 
     def get_memory_manufacturing_date_code(self, memory_number=0):
         id_number = 337119233
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
-        return result["v"]
+        return result["sv"]
 
     def get_memory_temperature(self, memory_number=0):
         id_number = 337119489
@@ -495,7 +495,7 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
-        return result["v"]
+        return result["sv"]
 
     def get_memory_manufacture(self, memory_number=0):
         id_number = 337120257
@@ -509,14 +509,14 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
-        return result["v"]
+        return result["sv"]
 
     def get_memory_specific(self, memory_number=0):
         id_number = 337125633
         result = self.get_data_by_id(id_number+memory_number)
         if not result:
             return None
-        return result["v"]
+        return result["sv"]
 
     @property
     def total_disk_space(self):
