@@ -44,9 +44,9 @@ class SusiIot(IMotherboard, IGpio, IMemory, IDisk):
         self.set_susiiot_information(susiiot_information)
         self.set_device_id_list()
         self.set_gpio_list()
-        # self.set_voltage_sources()
-        # self.set_memory_list()
-        # self.set_temperature_sources()
+        self.set_voltage_sources()
+        self.set_memory_list()
+        self.set_temperature_sources()
 
     def __del__(self):
         self.susi_iot_library.SusiIoTUninitialize()
