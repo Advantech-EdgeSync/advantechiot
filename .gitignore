@@ -1,22 +1,72 @@
-
+# Byte-compiled / optimized / DLL files
 __pycache__/
-Driver_arm/libSUSI-4.00.so
-Driver_arm/libSUSI-4.00.so.1
-Driver_arm/libSusiIoT.so
-Driver_arm/libjansson.so
-Driver_arm/libjansson.so.4
-Driver_x86/libEApi.so
-Driver_x86/libEApi.so.1
-Driver_x86/libjansson.so.4
-Driver_x86/libSUSIDevice.so
-Driver_x86/libSusiIoT.so
-Driver_x86/libSUSI-4.00.so
-Driver_x86/libSUSI-3.02.so.1
-Driver_x86/libSUSI-4.00.so.1
-Driver_x86/libSUSI-3.02.so
-Driver_x86/libjansson.so
-Driver_x86/libSUSIAI.so
-*core*
-*.pyc
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.egg
+*.egg-info/
+dist/
 build/
-advantechiot.egg-info/
+*.pyc
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# Pycharm
+.idea/
+
+# VS Code
+.vscode/
