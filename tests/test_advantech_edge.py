@@ -9,7 +9,7 @@ class TestPlatformInformation(unittest.TestCase):
         print("\n---------------------------------------")
         
         device = advantech.edge.Device()
-        print(f"Motherboard Manufacturer : {device.platform_information.motherboard_manufacturer}")
+        print(f"Manufacturer : {device.platform_information.manufacturer}")
         print(f"Motherboard Name : {device.platform_information.motherboard_name}")
         print(f"BIOS Revision : {device.platform_information.bios_revision}")
         print(f"Library Version : {device.platform_information.library_version}")
